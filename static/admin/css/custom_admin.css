@@ -1,0 +1,15 @@
+#changelist-form table {
+    border-collapse: collapse; /* Ini akan menggabungkan border sel */
+    width: 100%;
+}
+
+#changelist-form th,
+#changelist-form td {
+    border: 1px solid #ddd; /* Tambahkan border di sini */
+    padding: 8px;
+    text-align: left;
+}
+
+#changelist-form th {
+    background-color: #f2f2f2;
+}

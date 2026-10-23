@@ -1,0 +1,14 @@
+<div class="sidebar bg-dark text-white p-3" style="width: 250px; height: 100vh;">
+    <h4>INSIDE</h4>
+    <p>{{ user.username|capfirst }}</p>
+    <hr>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link text-white" href="{% url 'dashboard_user_b' %}">Dashboard</a></li>
+
+        {% if user.userprofile.role == 'admin' or user.userprofile.role == 'user_b' %}
+            <li class="nav-item"><a class="nav-link text-white" href="{% url 'form_disposed_list' %}">Form Disposed</a></li>
+        {% endif %}
+        
+        <!-- Tambahkan link sesuai role -->
+    </ul>
+</div>

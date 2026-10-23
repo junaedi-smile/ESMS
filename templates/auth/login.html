@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - AssetPrima</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+<style>
+
+/* Sisa kode CSS Anda, ini juga sudah benar */
+body {
+    background-image: url('/static/img/login_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card kontainer */
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 300px;
+    backdrop-filter: blur(6px);
+}
+
+/* Judul / Branding */
+.brand-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #003366;
+    text-align: center;
+    margin-bottom: 0.3rem;
+}
+
+.brand-subtitle {
+    font-size: 0.7rem;
+    color: #336699;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 0 0 5px 0;
+}
+
+/* Styling untuk pesan error */
+.login-card .error-box {
+    background-color: #e57373; /* Merah solid, sedikit lebih terang */
+    color: white;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    position: relative; /* Ini penting agar .close-btn diposisikan relatif terhadap kotak ini */
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-box.fade-out {
+    opacity: 0;
+}
+
+.alert-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Perataan Tombol Tutup - DIREVISI */
+.close-btn {
+    position: absolute;
+    right: 8px; /* Jarak dari kanan */
+    top: 8px; /* Jarak dari atas */
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: black; /* Warna tombol hitam */
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s ease;
+}
+
+/* Hover effect */
+.close-btn:hover {
+    color: gray; /* Warna abu-abu saat di-hover */
+}
+
+
+/* Input form */
+.login-card input[type="text"],
+.login-card input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+.login-card-form{
+    padding-top: 30px;
+}
+.login-card input:focus {
+    border-color: #005499;
+    outline: none;
+}
+
+/* Tombol login */
+.btn-login {
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-login:hover {
+    background-color: #005499;
+}
+
+/* Link di bawah form */
+.login-links {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.login-links a {
+    color: #003366;
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+.login-links a:hover {
+    text-decoration: underline;
+}
+/* Tulisan dibawah form */
+
+
+</style>
+  
+</head>
+<body>
+  <div class="login-card">
+    <div class="brand-title">
+      <small>ESMS</small><br> 
+      <small class="brand-subtitle">(Equipment Status Monitoring System)</small>
+    </div> 
+    <!-- ✅ Tampilkan pesan error --> 
+    {% if messages %}
+      {% for message in messages %}
+        <div class="error-box">
+          <!-- Tambahkan ikon error di sini -->
+          <span class="alert-text">{{ message }}</span>
+          <button class="close-btn" onclick="closeError(this)">×</button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!------Form login-->
+
+    <form class="login-card-form" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}"> 
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" id="username" required>
+      </div>      
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="password" required>
+      </div>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-login">Login</button>
+      </div>
+    </form>
+    <div class="login-links">
+      <a href="{% url 'password_reset' %}">Lupa Password?</a>
+    </div>
+  </div>
+  <script>
+    function closeError(button) {
+      let box = button.parentElement;
+      box.classList.add("fade-out");
+      setTimeout(() => {
+        box.style.display = "none";
+      }, 500); // sesuai durasi transition
+    }
+  </script>
+</body>
+</html>

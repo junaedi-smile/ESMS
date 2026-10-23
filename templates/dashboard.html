@@ -1,0 +1,87 @@
+<!-- templates/dashboard/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Inventaris</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .card { padding: 20px; border-radius: 8px; background: white; box-shadow: 0 0 10px #ddd; margin-bottom: 20px; }
+        .card h3 { margin: 0; }
+        .container { width: 90%; margin: auto; padding-top: 20px; font-family: Arial; }
+        .row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 200px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #f5f5f5; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Dashboard Inventaris Alat Berat</h2>
+
+    <div class="row">
+        <div class="col card">
+            <h3>{{ total_assets }}</h3>
+            <p>Total Assets</p>
+        </div>
+        <div class="col card">
+            <h3>{{ operate }}</h3>
+            <p>Operate</p>
+        </div>
+        <div class="col card">
+            <h3>{{ standby }}</h3>
+            <p>Standby</p>
+        </div>
+        <div class="col card">
+            <h3>{{ disposed }}</h3>
+            <p>Disposed</p>
+        </div>
+        <div class="col card">
+            <h3>{{ rfu }}</h3>
+            <p>rfu</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col card">
+            <canvas id="conditionChart"></canvas>
+        </div>
+        <div class="col card">
+            <h3>Asset List</h3>
+            <table>
+                <tr>
+                    <th>Asset ID</th>
+                    <th>Nama</th>
+                    <th>Kondisi</th>
+                </tr>
+                {% for asset in asset_list %}
+                <tr>
+                    <td>{{ asset.CN_SAP }}</td>
+                    <td>{{ asset.No_Asset }}</td>
+                    <td>{{ asset.EQUIPMENT_CONDITION }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3">Data tidak ditemukan</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('conditionChart').getContext('2d');
+    const conditionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['BREAKDOWN', 'STANDBY', 'DISPOSED','RFU'],
+            datasets: [{
+                label: 'Equipment Condition',
+                data: [{{ operate }}, {{ standby }}, {{ disposed }}, {{ rfu }}],
+                backgroundColor: ['#00C49F', '#FFBB28', '#FF4444', '#FF4444']
+            }]
+        }
+    });
+</script>
+</body>
+</html>

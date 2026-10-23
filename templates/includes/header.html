@@ -1,0 +1,9 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">INSIDE</a>
+    <div class="d-flex text-white">
+      <span class="me-3">Hi, {{ request.user.username }}</span>
+      <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light">Logout</a>
+    </div>
+  </div>
+</nav>

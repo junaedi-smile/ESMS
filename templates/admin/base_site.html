@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+
+{% block extrajs %}
+{{ block.super }}
+
+{% if capex_modal_html %}
+    {{ capex_modal_html }}
+{% endif %}
+
+{% endblock %}

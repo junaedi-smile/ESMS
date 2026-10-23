@@ -1,0 +1,69 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}Tambah Status Bulanan - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Tambah Status Bulanan Baru</h1>
+    <p>Silakan isi detail status bulanan untuk unit Anda.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Render form secara otomatis -->
+        {{ form.as_p }}
+
+        <button type="submit" class="btn-primary">Simpan</button>
+    </form>
+    
+    <div style="margin-top: 1rem;">
+        <a href="{% url 'asset:equipment_monthly_status_list' %}">Kembali ke Daftar Status</a>
+    </div>
+</div>
+
+<style>
+    .main-content {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        color: #343a40;
+        margin-bottom: 1rem;
+    }
+    form p {
+        margin-bottom: 1rem;
+    }
+    form label {
+        display: block;
+        margin-bottom: .5rem;
+        font-weight: bold;
+    }
+    form input, form select {
+        width: 100%;
+        padding: .5rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+{% endblock %}

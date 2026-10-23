@@ -1,0 +1,50 @@
+<!-- modal_foto_4_sisi.html -->
+<!-- MODAL FOTO 4 SISI -->
+<div id="foto4SisiModal" style="display:none; position:fixed; z-index:99999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+    <div style="background:white; width:800px; max-width:90%; padding:20px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto;">
+        <h3 style="margin-top:0; border-bottom:2px solid #ddd; padding-bottom:10px; font-size:16px; color:#333;">FOTO EMPAT SISI UNIT DISPOSED</h3>
+        
+        <table style="width:100%; margin-bottom:15px; font-size:13px; border-collapse:collapse;">
+            <tr><td style="padding:4px; width:35%;"><strong>Code Number SAP</strong></td><td style="padding:4px;">: <span id="modal_cn_sap">-</span></td></tr>
+            <tr><td style="padding:4px;"><strong>Code Number Ellipse</strong></td><td style="padding:4px;">: <span id="modal_cn_ellipse">-</span></td></tr>
+            <tr><td style="padding:4px;"><strong>Unit Serial Number</strong></td><td style="padding:4px;">: <span id="modal_sn">-</span></td></tr>
+            <tr><td style="padding:4px;"><strong>Unit Model (EGI)</strong></td><td style="padding:4px;">: <span id="modal_egi">-</span></td></tr>
+        </table>
+
+        <form id="formFoto4SisiData" enctype="multipart/form-data">
+            <input type="hidden" id="input_cn_sap" name="cn_sap">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                
+                <div style="border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 5px; background:#fdfdfd;">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:12px;">TAMPAK DEPAN</label>
+                    <input type="file" name="tampak_depan" accept="image/*" onchange="previewImageModal(this, 'preview_depan')" style="font-size:11px; width:100%;">
+                    <img id="preview_depan" style="max-width:100%; height:100px; margin-top:8px; object-fit:contain; display:none; border:1px solid #ddd;">
+                </div>
+
+                <div style="border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 5px; background:#fdfdfd;">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:12px;">TAMPAK BELAKANG</label>
+                    <input type="file" name="tampak_belakang" accept="image/*" onchange="previewImageModal(this, 'preview_belakang')" style="font-size:11px; width:100%;">
+                    <img id="preview_belakang" style="max-width:100%; height:100px; margin-top:8px; object-fit:contain; display:none; border:1px solid #ddd;">
+                </div>
+
+                <div style="border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 5px; background:#fdfdfd;">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:12px;">TAMPAK SAMPING KANAN</label>
+                    <input type="file" name="tampak_samping_kanan" accept="image/*" onchange="previewImageModal(this, 'preview_kanan')" style="font-size:11px; width:100%;">
+                    <img id="preview_kanan" style="max-width:100%; height:100px; margin-top:8px; object-fit:contain; display:none; border:1px solid #ddd;">
+                </div>
+
+                <div style="border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 5px; background:#fdfdfd;">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:12px;">TAMPAK SAMPING KIRI</label>
+                    <input type="file" name="tampak_samping_kiri" accept="image/*" onchange="previewImageModal(this, 'preview_kiri')" style="font-size:11px; width:100%;">
+                    <img id="preview_kiri" style="max-width:100%; height:100px; margin-top:8px; object-fit:contain; display:none; border:1px solid #ddd;">
+                </div>
+
+            </div>
+
+            <div style="text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" onclick="closeFoto4SisiModal()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-size:12px;">Batal</button>
+                <button type="submit" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px;">Save Form</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+{# inside/templates/admin/index.html #}
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Dashboard Pengguna</h2>
+    <p>Selamat datang, {{ user.username }}!</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="card-title">Profil</h5>
+                <p class="card-text">Lihat dan perbarui informasi akun Anda.</p>
+                <a href="{% url 'user_profile' %}" class="btn btn-primary">Lihat Profil</a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="card-title">Ubah Kata Sandi</h5>
+                <p class="card-text">Jaga keamanan akun Anda dengan rutin mengganti password.</p>
+                <a href="{% url 'password_change' %}" class="btn btn-warning">Ganti Password</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

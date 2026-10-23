@@ -1,0 +1,13 @@
+{% load static %}
+
+<ul class="nav flex-column">
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'dashboard_user_b' %}">🏠 Dashboard</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/form_disposed/fotokondisiunit/">📝 Form Disposed</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-danger" href="{% url 'logout' %}">🚪 Logout</a>
+  </li>
+</ul>

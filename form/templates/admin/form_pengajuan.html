@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Formulir Pengajuan Baru</h1>
+    <form action="{% url 'inside_admin:form_pengajuan' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Ajukan</button>
+    </form>
+</div>
+{% endblock %}

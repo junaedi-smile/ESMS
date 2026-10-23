@@ -1,0 +1,311 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div style="max-width:900px; margin:0 auto; font-family:Arial,sans-serif;">
+
+    <h1>{{ title }}</h1>
+
+    <!-- Status Badge -->
+    {% with status=instance.status %}
+    <div style="margin-bottom:24px;">
+        {% if status == 'DRAFT' %}
+            <span style="background:#888; color:#fff; padding:6px 16px;
+                         border-radius:20px; font-weight:600;">● DRAFT</span>
+        {% elif status == 'SUB' %}
+            <span style="background:#1883ff; color:#fff; padding:6px 16px;
+                         border-radius:20px; font-weight:600;">● Submitted</span>
+        {% elif status == 'APR1' %}
+            <span style="background:#f57c00; color:#fff; padding:6px 16px;
+                         border-radius:20px; font-weight:600;">● Approved Level 1</span>
+        {% elif status == 'APR2' %}
+            <span style="background:#9c27b0; color:#fff; padding:6px 16px;
+                         border-radius:20px; font-weight:600;">● Approved Level 2</span>
+        {% elif status == 'FIN' %}
+            <span style="background:#28a745; color:#fff; padding:6px 16px;
+                         border-radius:20px; font-weight:600;">● Final Approved</span>
+        {% elif status == 'REJ' %}
+            <span style="background:#dc3545; color:#fff; padding:6px 16px;
+                         border-radius:20px; font-weight:600;">● Rejected</span>
+        {% endif %}
+
+        <span style="margin-left:16px; color:#888; font-size:13px;">
+            Diajukan oleh: <strong>{{ instance.diajukan_oleh }}</strong>
+            pada {{ instance.submitted_at|date:"d M Y H:i" }}
+        </span>
+    </div>
+    {% endwith %}
+
+    <!-- Data Auto-fill -->
+    <div style="background:#fff; border-radius:10px; padding:24px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px;">
+        <h3 style="margin-top:0; color:#1883ff; border-bottom:2px solid #e8f4fd;
+                   padding-bottom:8px;">
+            🤖 Data dari Sistem
+        </h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+                    gap:16px;">
+            
+
+
+            <!-- ✅ GANTI dengan ini — tidak perlu custom filter -->
+        <fieldset style="
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        ">
+            <legend style="
+                background: #e8f4fd;
+                color: #1883ff;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+            ">
+                🤖 Data Otomatis dari Sistem (tidak bisa diedit)
+            </legend>
+
+            <div style="display:grid;
+                        grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+                        gap:16px;">
+
+                <!-- CN SAP -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">CN SAP</label>
+                    <input type="text" id="display-CN_SAP"
+                        value="{{ form.CN_SAP.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+                <!-- GROUP / Class Equipment -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">
+                        Class Equipment
+                    </label>
+                    <input type="text" id="display-GROUP"
+                        value="{{ form.GROUP.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+                <!-- TYPE -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">Type</label>
+                    <input type="text" id="display-TYPE"
+                        value="{{ form.TYPE.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+                <!-- EGI -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">EGI</label>
+                    <input type="text" id="display-EGI"
+                        value="{{ form.EGI.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+                <!-- HM_SMR -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">
+                        Hour Meter
+                    </label>
+                    <input type="text" id="display-HM_SMR"
+                        value="{{ form.HM_SMR.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+                <!-- SPO_EQUIPMENT -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">
+                        SPO Equipment
+                    </label>
+                    <input type="text" id="display-SPO_EQUIPMENT"
+                        value="{{ form.SPO_EQUIPMENT.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+                <!-- PERSENTASE_SPO -->
+                <div>
+                    <label style="display:block; font-size:11px; color:#888;
+                                font-weight:600; margin-bottom:4px;">% SPO</label>
+                    <input type="text" id="display-PERSENTASE_SPO"
+                        value="{{ form.PERSENTASE_SPO.value|default:'' }}"
+                        readonly style="width:100%; padding:8px 10px;
+                            border:1.5px solid #ddd; border-radius:6px;
+                            background:#f5f5f5; font-size:13px;
+                            color:#555; box-sizing:border-box;"/>
+                </div>
+
+            </div>
+        </fieldset>
+
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Data Manual -->
+    <div style="background:#fff; border-radius:10px; padding:24px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px;">
+        <h3 style="margin-top:0; color:#f57c00; border-bottom:2px solid #fff8e1;
+                   padding-bottom:8px;">
+            ✏️ Data Manual
+        </h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+                    gap:16px;">
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Nilai Akuisisi</div>
+                <div style="font-size:14px; color:#333;">{{ instance.NILAI_AKUISISI }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">NBV</div>
+                <div style="font-size:14px; color:#333;">{{ instance.NBV }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">RV</div>
+                <div style="font-size:14px; color:#333;">{{ instance.RV }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Status NBV</div>
+                <div style="font-size:14px; color:#333;">{{ instance.get_NBV_STATUS_display }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Date Delivery</div>
+                <div style="font-size:14px; color:#333;">
+                    {{ instance.DATE_DELIVERY|date:"d M Y" }}
+                </div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Life Equipment</div>
+                <div style="font-size:14px; color:#333;">{{ instance.LIFE_EQUIPMENT }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Standar Depresiasi</div>
+                <div style="font-size:14px; color:#333;">{{ instance.STANDAR_DEPRE_EQUIPMENT }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Replacement</div>
+                <div style="font-size:14px; color:#333;">{{ instance.REPLACEMENT }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Kondisi Body</div>
+                <div style="font-size:14px; color:#333;">{{ instance.KONDISI_BODY }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Kondisi Frame</div>
+                <div style="font-size:14px; color:#333;">{{ instance.KONDISI_FRAME }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Kondisi Komponen</div>
+                <div style="font-size:14px; color:#333;">{{ instance.KONDISI_KOMPONEN }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">% Life Comp SPO</div>
+                <div style="font-size:14px; color:#333;">{{ instance.PROSENTASE_LIFE_COMP_SPO }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Cost Repair</div>
+                <div style="font-size:14px; color:#333;">{{ instance.COST_REPAIR }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Harga New</div>
+                <div style="font-size:14px; color:#333;">{{ instance.HARGA_NEW }}</div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#888; font-weight:600;">Nilai Sisa Komponen</div>
+                <div style="font-size:14px; color:#333;">{{ instance.NILAI_SISA_COMP }}</div>
+            </div>
+        </div>
+        <div style="margin-top:16px;">
+            <div style="font-size:11px; color:#888; font-weight:600;">Obsolete</div>
+            <div style="font-size:14px; color:#333; margin-top:4px;">
+                {{ instance.OBSOLETE|linebreaks }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Riwayat Approval -->
+    <div style="background:#fff; border-radius:10px; padding:24px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:20px;">
+        <h3 style="margin-top:0; color:#333; border-bottom:2px solid #f0f0f0;
+                   padding-bottom:8px;">
+            📋 Riwayat Approval
+        </h3>
+        {% if logs %}
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <thead>
+                <tr style="background:#f5f5f5;">
+                    <th style="padding:10px; text-align:left; border:1px solid #ddd;">Langkah</th>
+                    <th style="padding:10px; text-align:left; border:1px solid #ddd;">Aksi</th>
+                    <th style="padding:10px; text-align:left; border:1px solid #ddd;">Oleh</th>
+                    <th style="padding:10px; text-align:left; border:1px solid #ddd;">Tanggal</th>
+                    <th style="padding:10px; text-align:left; border:1px solid #ddd;">Komentar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr style="{% cycle 'background:#fff;' 'background:#fafafa;' %}">
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ log.langkah.nama_langkah|default:"-" }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {% if log.action == 'SUBMIT' %}
+                            <span style="color:#1883ff; font-weight:600;">● Diajukan</span>
+                        {% elif log.action == 'APPROVED' %}
+                            <span style="color:#28a745; font-weight:600;">● Disetujui</span>
+                        {% elif log.action == 'REJECTED' %}
+                            <span style="color:#dc3545; font-weight:600;">● Ditolak</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ log.approved_by|default:"-" }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ log.tanggal_persetujuan|date:"d M Y H:i" }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ log.komentar|default:"-" }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color:#888;">Belum ada riwayat approval.</p>
+        {% endif %}
+    </div>
+
+    <!-- Tombol navigasi -->
+    <div style="display:flex; gap:12px;">
+        <a href="{% url 'inside_admin:asset_assetequipmentdisposed_changelist' %}"
+           style="padding:10px 20px; background:#f0f0f0; color:#555;
+                  border-radius:8px; text-decoration:none; font-size:14px;">
+            ← Kembali ke Daftar Disposed
+        </a>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div style="max-width:1000px; margin:0 auto; font-family:Arial,sans-serif;">
+
+    <div style="display:flex; justify-content:space-between;
+                align-items:center; margin-bottom:20px;">
+        <h1>{{ title }}</h1>
+        <a href="{% url 'inside_admin:asset_assetequipmentdisposed_changelist' %}"
+           style="padding:9px 18px; background:#1883ff; color:#fff;
+                  border-radius:7px; text-decoration:none; font-size:13px;">
+            ← Kembali ke Daftar Disposed
+        </a>
+    </div>
+
+    <div style="background:#fff; border-radius:10px; padding:24px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+        {% if daftar %}
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <thead>
+                <tr style="background:#f5f5f5;">
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">No</th>
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">CN SAP</th>
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">EGI</th>
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">Type</th>
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">Status</th>
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">Dibuat</th>
+                    <th style="padding:10px; border:1px solid #ddd; text-align:left;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in daftar %}
+                <tr style="{% cycle 'background:#fff;' 'background:#fafafa;' %}">
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ forloop.counter }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        <strong>{{ item.CN_SAP }}</strong>
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ item.EGI|default:"-" }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ item.TYPE|default:"-" }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {% if item.status == 'DRAFT' %}
+                            <span style="color:#888; font-weight:600;">● DRAFT</span>
+                        {% elif item.status == 'SUB' %}
+                            <span style="color:#1883ff; font-weight:600;">● Submitted</span>
+                        {% elif item.status == 'APR1' %}
+                            <span style="color:#f57c00; font-weight:600;">● Approved L1</span>
+                        {% elif item.status == 'APR2' %}
+                            <span style="color:#9c27b0; font-weight:600;">● Approved L2</span>
+                        {% elif item.status == 'FIN' %}
+                            <span style="color:#28a745; font-weight:600;">● Final</span>
+                        {% elif item.status == 'REJ' %}
+                            <span style="color:#dc3545; font-weight:600;">● Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        {{ item.created_at|date:"d M Y H:i" }}
+                    </td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        <a href="{% url 'form:lampiran_capex_detail' pk=item.pk %}"
+                           style="padding:5px 12px; background:#f0f9f0;
+                                  color:#28a745; border:1.5px solid #28a745;
+                                  border-radius:6px; font-size:11px;
+                                  text-decoration:none;">
+                            📄 Lihat
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <div style="text-align:center; padding:40px; color:#888;">
+            <p style="font-size:16px;">Belum ada Form Lampiran Capex.</p>
+            <p style="font-size:13px;">
+                Buat form baru melalui halaman
+                <a href="{% url 'inside_admin:asset_assetequipmentdisposed_changelist' %}">
+                    Daftar Disposed
+                </a>.
+            </p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

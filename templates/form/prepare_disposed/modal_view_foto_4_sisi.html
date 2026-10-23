@@ -1,0 +1,86 @@
+<!-- Modal View Foto 4 Sisi -->
+<div class="modal fade" id="viewFotoModal" tabindex="-1" aria-hidden="true">
+    <!-- Menggunakan modal-xl agar lebih besar sedikit dari modal-lg -->
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white py-2">
+                <h5 class="modal-title">👁️ Detail Foto 4 Sisi Unit</h5>
+                <button type="button" class="btn-close" onclick="closeViewFotoModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <!-- Header Info yang Rapi Sejajar Titik Dua -->
+                <div class="card p-3 mb-3 bg-light border">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="w-100 mb-0" style="border-collapse: separate; border-spacing: 0 4px;">
+                                <tr>
+                                    <td style="width: 35%;"><strong>CN SAP</strong></td>
+                                    <td style="width: 5%;">:</td>
+                                    <td><span id="view_cn_sap">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>EGI</strong></td>
+                                    <td>:</td>
+                                    <td><span id="view_egi">-</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="w-100 mb-0" style="border-collapse: separate; border-spacing: 0 4px;">
+                                <tr>
+                                    <td style="width: 35%;"><strong>CN ELLIPSE</strong></td>
+                                    <td style="width: 5%;">:</td>
+                                    <td><span id="view_cn_ellipse">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SN</strong></td>
+                                    <td>:</td>
+                                    <td><span id="view_sn">-</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian Preview 4 Sisi Foto (Sedikit lebih luas, tetap muat sekaligus) -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card p-2 h-100">
+                            <h6 class="mb-2">📸 Tampak Depan</h6>
+                            <div class="text-center bg-light border rounded p-2" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <img id="view_img_depan" src="" alt="Tampak Depan" class="img-fluid rounded" style="max-height: 220px; object-fit: contain;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-2 h-100">
+                            <h6 class="mb-2">📸 Tampak Belakang</h6>
+                            <div class="text-center bg-light border rounded p-2" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <img id="view_img_belakang" src="" alt="Tampak Belakang" class="img-fluid rounded" style="max-height: 220px; object-fit: contain;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-2 h-100">
+                            <h6 class="mb-2">📸 Tampak Samping Kanan</h6>
+                            <div class="text-center bg-light border rounded p-2" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <img id="view_img_kanan" src="" alt="Tampak Samping Kanan" class="img-fluid rounded" style="max-height: 220px; object-fit: contain;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-2 h-100">
+                            <h6 class="mb-2">📸 Tampak Samping Kiri</h6>
+                            <div class="text-center bg-light border rounded p-2" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <img id="view_img_kiri" src="" alt="Tampak Samping Kiri" class="img-fluid rounded" style="max-height: 220px; object-fit: contain;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-secondary" onclick="closeViewFotoModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,144 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ header|default:"Edit Checksheet PI (Rejected)" }} - {{ checksheet.cn_sap }}</h1>
+
+    <form method="post" action="{% url 'form:update_checksheet' pk=checksheet.pk %}">
+        {% csrf_token %}
+
+        {% if header_form.non_field_errors %}
+            <p class="errornote">{{ header_form.non_field_errors }}</p>
+        {% endif %}
+        
+        <div class="module">
+            <h2>Header Inspeksi & Data Unit</h2>
+            <fieldset class="module aligned">
+                
+                <div class="form-row">
+                    <div class="fieldBox field-cn_sap">
+                        {{ header_form.cn_sap.label_tag }}
+                        <p class="readonly">{{ header_form.instance.cn_sap }}</p>
+                        {{ header_form.cn_sap.as_hidden }}
+                        {{ header_form.egi.as_hidden }}
+                    </div>
+                    
+                    <div class="fieldBox field-hm_smr">
+                        {{ header_form.hm_smr.label_tag }}
+                        {{ header_form.hm_smr.errors }}
+                        {{ header_form.hm_smr }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="fieldBox field-pic_inspector">
+                        {{ header_form.pic_inspector.label_tag }}
+                        {{ header_form.pic_inspector.errors }}
+                        {{ header_form.pic_inspector }}
+                    </div>
+                    
+                    <div class="fieldBox field-atasan_inspector">
+                        {{ header_form.atasan_inspector.label_tag }}
+                        {{ header_form.atasan_inspector.errors }}
+                        {{ header_form.atasan_inspector }}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="module">
+            <h2>Item-Item Inspeksi (Perbaikan)</h2>
+            <p class="help-block">Perbaiki item yang ditolak di bagian bawah.</p>
+            <div class="checksheet-container">
+                <table class="table checksheet-table" id="checksheet-table">
+                    <thead>
+                        <tr>
+                            <th class="nowrap" style="width: 5%;">No.</th>
+                            <th class="nowrap" style="width: 35%;">Item Inspeksi</th>
+                            <th class="nowrap" style="width: 10%;">Qty</th>
+                            <th class="nowrap" style="width: 25%;">Kondisi</th>
+                            <th class="nowrap" style="width: 25%;">Keterangan (Remarks)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr class="{% cycle 'row1' 'row2' %}">
+                            <td>
+                                {{ forloop.counter }}
+                                {{ form.id.as_hidden }}
+                            </td>
+                            <td>
+                                <p class="readonly" style="white-space: normal;">
+                                    **{{ form.instance.item_name|default:"(Item Baru)" }}**
+                                    {% if form.instance.category %}
+                                        <br><small style="color:#6c757d;">({{ form.instance.category }})</small>
+                                    {% endif %}
+                                </p>
+                            </td>
+                            <td>
+                                <p class="readonly">{{ form.instance.qty|default:1 }}</p>
+                            </td>
+                            <td class="field-condition">
+                                {{ form.condition.errors }}
+                                {% for radio in form.condition %}
+                                    <label class="radio-label">
+                                        {{ radio.tag }} {{ radio.choice_label }}
+                                    </label>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {{ form.remarks.errors }}
+                                {{ form.remarks }}
+                            </td>
+                            {{ form.DELETE }}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {{ formset.management_form }}
+                {{ formset.non_field_errors }}
+            </div>
+        </div>
+
+        <div class="submit-row">
+            <input type="submit" value="Simpan Perubahan Dokumen" class="default" style="background-color: #28a745;">
+            <p class="deletelink-box">
+                <a href="{% url 'form:checksheet_detail' pk=checksheet.pk %}" class="deletelink">Batal Perbaikan</a>
+            </p>
+            </div>
+    </form>
+</div>
+
+<style>
+    /* Styling agar lebih rapih dan sesuai Admin Django */
+    .readonly {
+        padding: 5px 7px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: block;
+        font-weight: bold;
+    }
+    .checksheet-table th.nowrap { white-space: nowrap; }
+    .checksheet-table td {
+        padding: 5px !important; 
+    }
+    .checksheet-table td.field-condition label { 
+        display: inline-block; /* Agar tombol radio sejajar */
+        cursor: pointer;
+        padding: 5px;
+        margin-right: 15px; /* Jarak antar radio */
+        text-align: center;
+    }
+    .checksheet-table td.field-condition input[type="radio"] { 
+        transform: scale(1.1); /* Sedikit diperbesar */
+        margin-right: 5px;
+    }
+    .submit-row input[type="submit"] {
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

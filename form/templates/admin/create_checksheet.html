@@ -1,0 +1,168 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ header }}</h1>
+
+    <!-- ✅ FORM UTAMA PEMBUATAN CHECKSHEET -->
+    <form method="post" action="{% url 'form:create_checksheet' %}?cn_sap={{ cn_sap }}&pic={{ pic }}&atasan={{ atasan }}">
+        {% csrf_token %}
+
+        {% if header_form.non_field_errors %}
+            <p class="errornote">{{ header_form.non_field_errors }}</p>
+        {% endif %}
+
+        {% if warning %}
+        <div class="module" style="background-color: #fcecec; border: 1px solid #d9534f; color: #d9534f; padding: 10px; font-weight: bold; margin-bottom: 10px;">
+            ⚠️ {{ warning }}
+        </div>
+        {% endif %}
+
+        <!-- 🔰 HEADER DATA -->
+        <div class="module">
+            <h2>Header Inspeksi & Data Unit</h2>
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    <div class="fieldBox field-cn_sap">
+                        {{ header_form.cn_sap.label_tag }}
+                        <p class="readonly">{{ header_form.cn_sap.value }}</p>
+                        {{ header_form.cn_sap.as_hidden }}
+                    </div>
+                    <div class="fieldBox field-egi">
+                        {{ header_form.egi.label_tag }}
+                        <p class="readonly">{{ header_form.egi.value }}</p>
+                        {{ header_form.egi.as_hidden }}
+                    </div>
+                    <div class="fieldBox field-hm_smr">
+                        {{ header_form.hm_smr.label_tag }}
+                        <P>{{ header_form.hm_smr }}</P>
+                        {{ header_form.hm_smr.errors }}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- 🔰 DATA INSPEKTOR -->
+        <div class="module">
+            <h2>Data Inspector</h2>
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    <div class="fieldBox field-pic_inspector">
+                        {{ header_form.pic_inspector.label_tag }}
+                        <p class="readonly">{{ header_form.pic_inspector.value }}</p>
+                        {{ header_form.pic_inspector.as_hidden }}
+                    </div>
+                    <div class="fieldBox field-atasan_inspector">
+                        {{ header_form.atasan_inspector.label_tag }}
+                        <p class="readonly">{{ header_form.atasan_inspector.value }}</p>
+                        {{ header_form.atasan_inspector.as_hidden }}
+                    </div>
+                </div>
+                {% if header_form.pic_inspector.errors or header_form.atasan_inspector.errors %}
+                <div class="errornote">Terdapat kesalahan pada data Inspektur.</div>
+                {% endif %}
+            </fieldset>
+        </div>
+
+        <!-- 🔰 DAFTAR ITEM CHECKSHEET -->
+        <div class="module">
+            <h2>Check Sheet Inspection List</h2>
+            <div class="tabular inline-group">
+                <table id="checksheet-table" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width:2%;text-align:center;">NO</th>
+                            <th rowspan="2" style="width:8%;text-align:center;">CATEGORY</th>
+                            <th rowspan="2" style="width:30%;text-align:center;">ITEM</th>
+                            <th rowspan="2" style="width:5%;text-align:center;">QTY</th>
+                            <th colspan="3" style="text-align:center;width:30%;">CONDITION</th>
+                            <th rowspan="2" style="width:25%;text-align:center;">REMARKS</th>
+                        </tr>
+                        <tr> 
+                            <th class="nowrap" style="text-align:center;">Good</th>
+                            <th class="nowrap" style="text-align:center;">Bad</th>
+                            <th class="nowrap" style="text-align:center;">N/A</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ formset.management_form }}
+                        
+                        {% for form in formset %}
+                        <tr class="form-row {% cycle 'row1' 'row2' %}">
+                            <td style="text-align:center;">{{ forloop.counter }}</td>
+                            <td>{{ form.initial.category }}{{ form.category.as_hidden }}</td>
+                            <td><p>{{ form.initial.item_name }}</p>{{ form.item_name.as_hidden }}{{ form.id }}</td>
+                            <td style="text-align:center;">{{ form.initial.qty }}{{ form.qty.as_hidden }}</td>
+
+                            {% for choice in form.condition %}
+                            <td style="text-align:center;">
+                                <label for="{{ choice.id_for_label }}">{{ choice.tag }}</label>
+                            </td>
+                            {% endfor %}
+
+                            <td>{{ form.remarks }}{{ form.remarks.errors }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {{ formset.non_field_errors }}
+            </div>
+        </div>
+
+        <!-- 🔰 TOMBOL AKSI -->
+        <div class="submit-row">
+            <input type="submit" value="💾 Simpan Check Sheet" class="default">
+            <p class="deletelink-box">
+                <a href="{% url 'form:select_asset' %}" class="deletelink">Batal</a>
+            </p>
+        </div>
+    </form>
+
+    <!-- 🟩=================== TAMBAHAN BARU =================== -->
+    {% if checksheet_saved %}
+    <div class="module" style="margin-top:20px;">
+        <h2>✅ Form Berhasil Disimpan</h2>
+        <p>Silakan lakukan pengajuan untuk approval Level 1.</p>
+        <form action="{% url 'form:process_approval' document_type='checksheet_pi' pk=checksheet_saved.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="submit">
+            <button type="submit" class="default" style="background-color:#4CAF50;">
+                🚀 Submit untuk Persetujuan Level 1
+            </button>
+        </form>
+    </div>
+    {% endif %}
+    <!-- 🟩===================================================== -->
+</div>
+
+<!-- 🔰 CSS TAMBAHAN -->
+<style>
+    .readonly {
+        padding: 5px 7px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: block;
+        font-weight: bold;
+    }
+    #checksheet-table th.nowrap { white-space: nowrap; }
+    #checksheet-table td { padding: 5px !important; }
+    #checksheet-table td.field-condition label {
+        display: block;
+        cursor: pointer;
+        padding: 5px;
+        margin: 0;
+        text-align: center;
+    }
+    #checksheet-table td.field-condition input[type="radio"] {
+        transform: scale(1.5);
+        margin: 0;
+    }
+    #checksheet-table td.field-remarks textarea {
+        width: 100%;
+        min-height: 35px;
+        box-sizing: border-box;
+    }
+</style>
+{% endblock %}

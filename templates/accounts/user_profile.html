@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Informasi Profil Akun</h6>
+                    <a href="{% url 'password_change' %}" class="btn btn-warning btn-sm shadow-sm">
+                        <i class="fas fa-lock fa-sm text-white-50"></i> Ubah Password
+                    </a>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Detail Profil Utama -->
+                    <h4 class="mb-4">Detail Pengguna</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-xs font-weight-bold text-gray-500 mb-0">Username:</label>
+                            <p class="h5 font-weight-bold text-gray-800">{{ user.username }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-xs font-weight-bold text-gray-500 mb-0">Email:</label>
+                            <p class="h5 font-weight-bold text-gray-800">{{ user.email|default:"-" }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+
+                    <!-- Status dan Peran -->
+                    <h4 class="mb-4">Status dan Peran</h4>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-xs font-weight-bold text-gray-500 mb-0">Status Akun:</label>
+                            {% if user.is_active %}
+                                <p class="h5 font-weight-bold text-success">Aktif</p>
+                            {% else %}
+                                <p class="h5 font-weight-bold text-danger">Tidak Aktif</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="text-xs font-weight-bold text-gray-500 mb-0">Grup/Peran:</label>
+                            <ul class="list-group mt-1">
+                                {% if user_groups %}
+                                    {% for group in user_groups %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center p-2">
+                                            {{ group.name|upper }}
+                                            <span class="badge badge-primary badge-pill">ROLE</span>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="list-group-item text-muted">Tidak ada grup/peran yang ditetapkan.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <a href="{% url 'login_redirect' %}" class="btn btn-secondary shadow-sm">
+                            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali ke Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<!-- Memastikan ikon Font Awesome tersedia -->
+<link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+{% endblock extrastyle %}

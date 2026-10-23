@@ -1,0 +1,270 @@
+{# inside/form/templates/admin/checksheet_detail.html #}
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div id="content-main">
+    <h1>Detail Checksheet PI - {{ checksheet.cn_sap }}</h1>
+
+    <div class="module">
+        <h2>Status Dokumen & Aksi</h2>
+
+        <table class="table">
+            <tr>
+                <th>Status Saat Ini:</th>
+                <td>
+                    <strong>
+                        {% if checksheet.status == 'DRAFT' %}
+                            <span style="color: blue;">DRAFT</span>
+                        {% elif checksheet.status == 'SUB' %}
+                            <span style="color: orange;">SUBMITTED</span>
+                        {% elif checksheet.status == 'FIN' %}
+                            <span style="color: green;">FINALIZED</span>
+                        {% elif checksheet.status == 'REJ' %}
+                            <span style="color: red;">REJECTED</span>
+                        {% else %}
+                            <span style="color: purple;">{{ checksheet.status }}</span>
+                        {% endif %}
+                    </strong>
+                </td>
+
+                <th>Level Persetujuan Berikutnya:</th>
+                <td>
+                    {% if checksheet.status == 'DRAFT' %}
+                        Level 1 (Pengajuan)
+                    {% elif checksheet.status == 'SUB' %}
+                        Level 2 (APR1)
+                    {% elif checksheet.status == 'APR1' %}
+                        Level 3 (APR2)
+                    {% elif checksheet.status == 'APR2' %}
+                        Finalisasi (FIN)
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <div class="submit-row" style="padding-top: 10px; border-top: 1px solid #ddd;">
+            {% if checksheet.status == 'DRAFT' %}
+                <form action="{% url 'form:process_approval' document_type='checksheet_pi' pk=checksheet.pk %}"
+                      method="post" style="display: inline-block;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="submit">
+                    <button type="submit" class="default">🚀 Submit untuk Persetujuan</button>
+                </form>
+
+            {% elif checksheet.status == 'SUB' or checksheet.status == 'APR1' or checksheet.status == 'APR2' and is_current_approver %}
+                <button type="button" class="default" onclick="showApprovalModal('approve')">
+                    ✅ Setujui (Approve)
+                </button>
+                <button type="button" class="button" style="background: #ba2121;"
+                        onclick="showApprovalModal('reject')">
+                    ❌ Tolak (Reject)
+                </button>
+            {% else %}
+                <span class="quiet">Tidak ada aksi persetujuan yang tersedia saat ini.</span>
+            {% endif %}
+
+            <button class="button" onclick="window.print()">Cetak Laporan</button>
+            <a href="{% url 'form:select_asset' %}" class="button">Kembali ke Daftar Aset</a>
+        </div>
+    </div>
+
+    <!-- ✅ Modal Konfirmasi Approval -->
+    <div id="approvalModal"
+         style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+                background:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="background:white; margin:10% auto; padding:20px; width:400px;
+                    border-radius:5px; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+            <h3 id="modalTitle">Konfirmasi Aksi</h3>
+            <form id="approvalForm" method="post"
+                  action="{% url 'form:process_approval' document_type='checksheet_pi' pk=checksheet.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" id="modalAction">
+                <label for="notes">Catatan Tambahan (Opsional):</label>
+                <textarea name="notes" id="notes" rows="3" style="width:100%;"></textarea>
+                <div style="margin-top:15px; text-align:right;">
+                    <button type="button" class="button"
+                            onclick="document.getElementById('approvalModal').style.display='none'">
+                        Batal
+                    </button>
+                    <button type="submit" class="default" id="modalSubmitBtn">Konfirmasi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showApprovalModal(action) {
+            const modal = document.getElementById('approvalModal');
+            const title = document.getElementById('modalTitle');
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            document.getElementById('modalAction').value = action;
+
+            if (action === 'approve') {
+                title.textContent = 'Konfirmasi Persetujuan';
+                submitBtn.textContent = 'Setujui Dokumen';
+                submitBtn.style.backgroundColor = '#4CAF50';
+            } else if (action === 'reject') {
+                title.textContent = 'Konfirmasi Penolakan';
+                submitBtn.textContent = 'Tolak Dokumen';
+                submitBtn.style.backgroundColor = '#ba2121';
+            }
+            modal.style.display = 'block';
+        }
+    </script>
+
+    <div class="module">
+        <h2>Riwayat Persetujuan (Approval Log)</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 20%;">Tanggal</th>
+                    <th style="width: 15%;">Aksi</th>
+                    <th style="width: 25%;">Oleh</th>
+                    <th style="width: 35%;">Catatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in approval_history %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ log.tanggal_persetujuan|date:"d M Y H:i" }}</td>
+                        <td>
+                            {% if log.action == 'APPROVED' %}
+                                <span style="color: green; font-weight: bold;">APPROVED</span>
+                            {% elif log.action == 'REJECTED' %}
+                                <span style="color: red; font-weight: bold;">REJECTED</span>
+                            {% elif log.action == 'SUBMIT' %}
+                                <span style="color: blue;">SUBMITTED</span>
+                            {% else %}
+                                {{ log.action }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ log.approved_by.get_full_name|default:log.approved_by.username }}
+                            {% if log.langkah %}
+                                <br><small>({{ log.langkah.nama_langkah }})</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.komentar|default:"-" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">Belum ada riwayat persetujuan.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+
+    <div class="module">
+        <h2>Informasi Unit</h2>
+        <table class="table">
+            <tr>
+                <th>CN SAP / Kode Unit:</th>
+                <td>{{ checksheet.cn_sap }}</td>
+                <th>EGI:</th>
+                <td>{{ checksheet.egi }}</td>
+            </tr>
+            <tr>
+                <th>HM/SMR:</th>
+                <td>{{ checksheet.hm_smr }}</td>
+                <th>Tanggal Inspeksi:</th>
+                <td>{{ checksheet.created_at|date:"d M Y" }}</td>
+            </tr>
+            <tr>
+                <th>PIC Inspector:</th>
+                <td>{{ checksheet.pic_inspector }}</td>
+                <th>Atasan Inspector:</th>
+                <td>{{ checksheet.atasan_inspector }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>📊 Ringkasan Hasil Inspeksi</h2>
+        <table class="table">
+            <tr>
+                <th>Total Item</th>
+                <td>{{ total_items }}</td>
+                <th>Good</th>
+                <td style="color:green;">{{ good_count }}</td>
+                <td style="color:green;">({{ good_percent }}%)</td>
+            </tr>
+            <tr>
+                <th>Total Item</th>
+                <td>-</td>
+                <th>Bad</th>
+                <td style="color:red;">{{ bad_count }}</td>
+                <td style="color:red;">({{ bad_percent }}%)</td>
+            </tr>
+            <tr>
+                <th>Total Item</th>
+                <td>-</td>
+                <th>N/A</th>
+                <td style="color:gray;">{{ na_count }}</td>
+                <td style="color:gray;">({{ na_percent }}%)</td>
+            </tr>
+            <tr>
+                <th>Persentase Kondisi Unit</th>
+                <td colspan="4">
+                    <div style="width:100%; background:#eee; border-radius:8px; overflow:hidden;">
+                        <div style="width:{{ good_percent }}%;
+                                    background:{% if good_percent >= 71 %}#4CAF50{% else %}#f44336{% endif %};
+                                    color:white; text-align:center; padding:4px 0;">
+                            {{ good_percent }}%
+                        </div>
+                    </div>
+                    <p style="margin-top:5px;">
+                        Status Unit:
+                        {% if condition_status == 'Good' %}
+                            <strong style="color:green;">Good (≥71%)</strong>
+                        {% else %}
+                            <strong style="color:red;">Bad (≤70%)</strong>
+                        {% endif %}
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="module">
+        <h2>Item-Item Inspeksi</h2>
+        <table id="result_list" class="table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No.</th>
+                    <th style="width: 35%;">Nama Item</th>
+                    <th style="width: 10%;">Qty</th>
+                    <th style="width: 15%;">Kondisi</th>
+                    <th style="width: 35%;">Keterangan (Remarks)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.qty }}</td>
+                        <td>
+                            {% if item.condition == 'G' %}
+                                <span style="color: green; font-weight: bold;">Baik (Good)</span>
+                            {% elif item.condition == 'B' %}
+                                <span style="color: red; font-weight: bold;">Rusak (Bad)</span>
+                            {% else %}
+                                <span style="color: gray;">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.remarks|default_if_none:"" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">Tidak ada item inspeksi yang ditemukan.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

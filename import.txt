@@ -1,0 +1,46 @@
+# IMPORT : Mengimport data dari file Excel  
+def import_asset_equipment_excel(request):
+    if request.method == 'POST' and request.FILES.get("file"):
+        file = request.FILE["file"]
+        file_extention = file.name.split(".")[-1]
+
+        #simpan file sementara
+        fs = FileSystemStorage()
+        filename = fs.save(file.name, file)
+        file_path = fs.path(filename)
+
+        try:
+            if file_extention in ["xls","xlsx"]:
+                df = pd.read_excel(file_path, engine='openpyxl')
+            else:
+                return render(request, "asset/import.html",{"error":"format file tidak didukung !"})
+            
+             #Pastikan kolom yang dibutuhkan ada
+             required_columns = {"No_Asset","CN_SAP","CN_ELLIPSE","EGI","TYPE","GROUP","OWNERSHIP","LOCATION",
+                 "SUB_SITE","BRAND","SN","HM_SMR","HM_DATE","SPO_EQUIPMENT","PERSENTASE_SPO","EQUIPMENT_CONDITION",
+                 "STATUS_EQUIPMENT","STATUS_EQUIPMENT_DISPOSED","REFERENSI_NO_PDE"}
+            if not required_columns.issubset(df.columns):
+                return render(request,'asset/import.html',{"error":"kolom dalam file tidak sesuai !"})
+            
+            #bersihkan data dari whitespice
+            df = df.applymap(lambda x: x.strip() if isinstance(x,str) else x)
+
+            #Looping untuk memasukkan data kedalam Database
+            errors = []
+            for _, row in df.iterrows():
+                serial_number = row["serial_number"]
+
+                #cek apakah serial number sudah ada di database
+                if AssetEquipment.objects.filter(serial_number=serial_number).exists():
+                    errors.append(f"serial number {serial_number} sudah ada di database")
+                    continue
+                
+                #insert data ke database
+                AssetEquipment.objects.create(
+                    name=row["name"],serial_number=serial_number, 
+                    purchase_date=row["purchase_date"]
+                    )
+            return render(request,"asset/import.html",{"message":"import berhasil", "error":errors})
+        except Exception as e:
+            return render(request,"asset/import.html",{"error":f"terjadi kesalahan:{str(e)}"})
+    return render(request,"asset/import.html")

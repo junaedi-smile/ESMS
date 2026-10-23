@@ -1,0 +1,27 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - INSIDE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{% static 'css/auth.css' %}" rel="stylesheet">
+  <link href="{% static 'niceadmin/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+<body>
+  <div class="login-card">
+    <div class="brand-title">Daftar Akun Baru</div>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="d-grid mt-3">
+        <button type="submit" class="btn btn-login">Register</button>
+      </div>
+    </form>
+    <div class="text-center mt-2">
+      <a href="{% url 'login' %}">Sudah punya akun? Login</a>
+    </div>
+  </div>
+</body>
+</html>

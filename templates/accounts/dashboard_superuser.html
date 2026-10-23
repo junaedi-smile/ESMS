@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div id="content-main">
+    <h1>Global Document Flow Monitoring</h1>
+    <p>Ringkasan Status dan Kinerja Seluruh Dokumen (Non-Draft/Rejected).</p>
+
+    <div class="module">
+        <h2>Daftar Dokumen yang Sedang Diproses ({{ monitoring_data|length }})</h2>
+        
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>CN SAP</th>
+                        <th>Status</th>
+                        <th>Waktu Submit</th>
+                        <th>Level Menunggu Saat Ini</th>
+                        <th>⏳ Total Waktu Proses</th>
+                        <th>Waktu Bottleneck (Historis)</th>
+                        <th>Langkah Bottleneck</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in monitoring_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'form:checksheet_detail' pk=doc.pk %}">
+                                <strong>{{ doc.cn_sap }}</strong>
+                            </a>
+                        </td>
+                        <td>
+                            <span style="font-weight:bold; color:{% if doc.status == 'FIN' %}green{% elif doc.status == 'SUB' %}orange{% else %}blue{% endif %};">{{ doc.status }}</span>
+                        </td>
+                        <td>{{ doc.submitted_at }}</td>
+                        <td>
+                            {% if doc.status != 'FIN' %}
+                                <strong>{{ doc.current_approval_step }}</strong> 
+                            {% else %}
+                                Selesai
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span style="color:blue; font-weight:bold;">{{ doc.elapsed_time }}</span>
+                        </td>
+                        <td>
+                            <span style="color:red;">{{ doc.longest_duration }}</span>
+                        </td>
+                        <td>
+                            {{ doc.bottleneck_step }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align:center;">Tidak ada dokumen aktif yang sedang diproses.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

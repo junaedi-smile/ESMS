@@ -1,0 +1,231 @@
+{# inside/templates/accounts/dashboard_user_c.html #}
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <!-- Header Khusus untuk Group C -->
+    <h2 class="mb-4">{{ header }} <span class="badge badge-success">GROUP C</span></h2>
+    <p class="lead">
+        Selamat datang, <strong class="text-primary">{{ user.username }}</strong>! 
+        Anda bertanggung jawab atas **Persetujuan Level 3 (Final Approval)** dan dapat melihat ringkasan statistik aset di bawah.
+    </p>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Bagian 1: Ringkasan Card Statistik (Info Boxes) -->
+    <!-- ------------------------------------------------------------------ -->
+    
+    <div class="data-table-container" style="margin-top: 40px;">
+        <h2>📋 Dokumen Menunggu Persetujuan {{ group_name }}</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>CN SAP</th>
+                    <th>EGI</th>
+                    <th>Status</th>
+                    <th>Tanggal Diajukan</th>
+                    <th colspan="3" class="action-header" style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pending_docs %}
+                    {% for doc in pending_docs %}
+                    <tr>
+                        <td>{{ doc.cn_sap }}</td>
+                        <td>{{ doc.egi }}</td>
+                        <td>{{ doc.get_status_display }}</td>
+                        <td>{{ doc.submitted_at|default:"-" }}</td>
+                        <td><a href="{% url 'form:checksheet_detail' doc.pk %}" class="btn btn-sm btn-info">👁️ Lihat</a></td>
+                        
+                        <td>
+                            <!-- ✅ FIXED: Tombol Approve/Reject Final -->
+                            <form method="post" action="{% url 'form:process_approval' 'checksheet_pi' doc.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn btn-sm btn-success">✅ Final Approve</button>
+                            </form>
+                        </td>        
+                        
+                        <td>
+                            <form method="post" action="{% url 'form:process_approval' 'checksheet_pi' doc.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn btn-sm btn-danger">❌ Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="5" class="text-center">Tidak ada dokumen menunggu approval.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="data-table-container" style="margin-top: 30px;">
+        <h3>🕓 Riwayat Approval</h3>
+        {% if pending_docs %}
+            {% for doc in pending_docs %}
+                <h4>{{ doc.cn_sap }} - {{ doc.egi }}</h4>
+                <ul>
+                    {% for log in doc.approvallog_set.all %}
+                        <li>{{ log.tanggal_persetujuan|date:"d M Y H:i" }} - <b>{{ log.action }}</b> oleh {{ log.approved_by }}</li>
+                    {% empty %}
+                        <li>Belum ada riwayat.</li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        {% else %}
+            <p>Tidak ada dokumen untuk ditampilkan riwayatnya.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div id="content-main">
+    <h1>Dashboard Approval - {{ group_name }}</h1>
+
+    <div class="module">
+        <h2>Monitoring Dokumen Menunggu Persetujuan Anda ({{ context.pending_docs|length }})</h2>
+        
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width:5%;">No.</th>
+                        <th style="width:20%;">CN SAP</th>
+                        <th style="width:25%;">Status Saat Ini</th>
+                        <th style="width:25%;">Status Selanjutnya</th>
+                        <th style="width:25%;">Level Menunggu Paling lama</th>
+                        <th style="width:25%;">Lamanya Waktu Tertahan (Sejak Aksi Terakhir)</th>
+                        <th style="width:25%;">Total waktu (proses sub-fin)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in pending_docs %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'form:checksheet_detail' pk=doc.pk %}">
+                                <strong>{{ doc.cn_sap }}</strong>
+                            </a>
+                        </td>
+                        <td><span style="color:orange; font-weight:bold;">APR2</span></td>
+                        <td>
+                            <strong>{{ doc.current_approval_step }}</strong> 
+                        </td> 
+                        <td>
+                            <strong>{{ doc.bottleneck_step }}</strong> 
+                        </td>
+                        <td>
+                            <span style="color:red; font-weight:bold;">{{ doc.longest_duration }}</span>
+                        </td>
+                         <td>
+                            <span style="color:red; font-weight:bold;">{{ doc.elapsed_time }}</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;">🎉 Tidak ada dokumen yang tertunda persetujuan Anda saat ini.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<!-- Tambahkan link FontAwesome untuk ikon jika belum ada di base_site.html -->
+<link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+{% endblock extrastyle %}
+
+{% block extrajs %}
+{{ block.super }}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('summaryChart').getContext('2d');
+        
+        // Data dari context Django (pastikan views.py mengirim 'chart_data' yang benar)
+        const chartLabels = {{ chart_data.labels|safe }};
+        const chartValues = {{ chart_data.values|safe }};
+        
+        // Warna Chart (Anda bisa menyesuaikannya)
+        const backgroundColors = [
+            '#4e73df', // Primary
+            '#e74a3b', // Danger
+            '#1cc88a', // Success
+            '#f6c23e', // Warning
+            '#36b9cc', // Info
+            '#5a5c69'  // Secondary
+        ];
+        
+        // Gunakan array warna berulang jika jumlah data > 6
+        const finalBackgroundColors = chartLabels.map((_, index) => backgroundColors[index % backgroundColors.length]);
+
+
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Jumlah Unit',
+                    data: chartValues,
+                    backgroundColor: finalBackgroundColors,
+                    borderColor: finalBackgroundColors.map(color => color.replace(')', ', 0.8)').replace('rgb', 'rgba')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Penting agar chart menyesuaikan tinggi card
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Jumlah Unit'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Kategori'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('id-ID').format(context.parsed.y) + ' Unit';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Pastikan card-body memiliki tinggi yang cukup untuk chart
+        document.querySelector('.chart-area').style.height = '400px'; 
+    });
+</script>
+{% endblock extrajs %}

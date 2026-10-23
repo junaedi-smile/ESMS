@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Form PDE - Cetak PDF</title>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            font-size: 12px;
+            margin: 2cm;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        td, th {
+            padding: 6px;
+            vertical-align: top;
+        }
+        .section-title {
+            font-weight: bold;
+            background: #eee;
+            padding: 4px;
+        }
+        .bordered {
+            border: 1px solid #000;
+        }
+        .signature-table td {
+            height: 80px;
+        }
+        .notes-table td {
+            border: 1px solid #000;
+        }
+        .footer-cc {
+            font-size: 11px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>PT. SAPTAINDRA SEJATI</h2>
+<h3>PERSETUJUAN DISPOSED EQUIPMENT</h3>
+
+<table>
+    <tr>
+        <td><strong>No:</strong> {{ form.id }}</td>
+        <td><strong>Tanggal:</strong> {{ form.tanggal }}</td>
+    </tr>
+</table>
+
+<table class="bordered">
+    <tr><td><strong>Equipment Number (Old CN):</strong> {{ form.equipment.CN_SAP }}</td></tr>
+    <tr><td><strong>Equipment Category:</strong> {{ form.equipment.category }}</td></tr>
+    <tr><td><strong>Equipment Type:</strong> {{ form.equipment.equipment_type }}</td></tr>
+    <tr><td><strong>Equipment Model:</strong> {{ form.equipment.model }}</td></tr>
+    <tr><td><strong>Serial Number:</strong> {{ form.equipment.serial_number }}</td></tr>
+    <tr><td><strong>Accumulated Hour Meter:</strong> {{ form.equipment.hour_meter }}</td></tr>
+    <tr><td><strong>Equipment Location:</strong> {{ form.equipment.location }}</td></tr>
+</table>
+
+<p class="section-title">Summary Analysis</p>
+<table class="notes-table">
+    <tr>
+        <td>No.</td>
+        <td>Description</td>
+        <td>Notes</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Analisa CAPEX</td>
+        <td>{{ form.analisa_capex }}</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Analisa Teknis</td>
+        <td>{{ form.analisa_teknis }}</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Analisa Cost & Benefit</td>
+        <td>{{ form.analisa_cost_benefit }}</td>
+    </tr>
+</table>
+
+<p class="section-title">Conclusion</p>
+<p>{{ form.conclusion }}</p>
+
+<p style="margin-top: 30px;">
+Dengan ini mengajukan equipment dengan data detail terlampir untuk tidak dioperasikan dan selanjutnya diserahkan team kepada Asset Management Head Office agar dikelola lebih lanjut.
+</p>
+
+<h4>Tanda Tangan</h4>
+<table class="signature-table">
+    <tr>
+        <td>Diajukan oleh:<br><br>______________________<br>Asset Management Dept.</td>
+        <td>Diketahui oleh:<br><br>______________________<br>Plant Budget & Contract Dept.</td>
+    </tr>
+    <tr>
+        <td>Diketahui oleh:<br><br>______________________<br>Plant Operation Div.</td>
+        <td>Disetujui oleh:<br><br>______________________<br>Technical Service Div.</td>
+    </tr>
+</table>
+
+<div class="footer-cc">
+    <strong>CC:</strong>
+    <ul>
+        <li>Asset Management Div Head HO</li>
+        <li>Operation & Technical Services Div Head HO</li>
+        <li>Engineering Job Site</li>
+        <li>Plant Budget & Overhaul Div Head HO</li>
+        <li>Plant Job Site</li>
+        <li>Production Job Site</li>
+        <li>Project Manager Job Site</li>
+        <li>File</li>
+    </ul>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Inline Custom CSS -->
+    <style>
+        .custom-add a,
+        .custom-import a,
+        .custom-export a {
+            margin-right: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .custom-add a {
+            background-color: #4CAF50; /* hijau */
+        }
+
+        .custom-import a {
+            background-color: #2196F3; /* biru */
+        }
+
+        .custom-export a {
+            background-color: #FF9800; /* oranye */
+        }
+
+        .custom-add a:hover,
+        .custom-import a:hover,
+        .custom-export a:hover {
+            opacity: 0.85;
+        }
+
+        /* Tambahan untuk menjaga tata letak */
+        .object-tools li {
+            display: inline-block;
+        }
+
+        .object-tools {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block object_tools %}
+<ul class="object-tools">
+    {% if has_add_permission %}
+        <li class="addlink custom-add">
+            <a href="{% url cl.opts.app_label|lower %}_{{ cl.opts.model_name|lower }}_add"{% if is_popup %} onclick="return showAddAnotherPopup(this);"{% endif %}>
+                <i class="fas fa-plus"></i> Tambah {{ cl.opts.verbose_name }}
+            </a>
+        </li>
+    {% endif %}
+
+    {% if has_import_permission %}
+        <li class="importlink custom-import">
+            <a href="{% url opts|admin_urlname:'import' %}">
+                <i class="fas fa-file-import"></i> Import
+            </a>
+        </li>
+    {% endif %}
+
+    <li class="exportlink custom-export">
+        <a href="{% url opts|admin_urlname:'export' %}">
+            <i class="fas fa-file-export"></i> Export Semua
+        </a>
+    </li>
+</ul>
+{% endblock %}
+

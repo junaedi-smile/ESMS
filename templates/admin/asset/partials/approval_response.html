@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respon Approval - PRIMA System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+    <div class="card shadow text-center p-4" style="max-width: 450px; width: 100%;">
+        <div class="card-body">
+            {% if success %}
+                <div class="text-success display-4 mb-3">✔</div>
+                <h3 class="card-title text-success fw-bold">Berhasil!</h3>
+            {% else %}
+                <div class="text-danger display-4 mb-3">✖</div>
+                <h3 class="card-title text-danger fw-bold">Gagal!</h3>
+            {% endif %}
+            
+            <p class="card-text text-muted mt-3">
+                {{ message|default:"Proses approval telah diproses oleh sistem." }}
+            </p>
+            
+            <div class="mt-4">
+                <!-- Menggunakan relative path /admin/ atau tag url Django agar aman saat deploy -->
+                <a href="/admin/" class="btn btn-primary btn-sm px-4">Kembali ke Sistem</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

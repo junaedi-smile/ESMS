@@ -1,0 +1,82 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+
+  <div id="content-main">
+
+    {# Inventory section #}
+    {% for app in app_list %}
+      {% if app.name == "Inventory" %}
+        <div class="card">
+          <div class="card-header"><strong>{{ app.name }}</strong></div>
+          <div class="card-body">
+            <ul class="object-tools">
+              {% for model in app.models %}
+                <li>
+                  <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                  {% if model.add_url %}
+                    <a href="{{ model.add_url }}" class="button addlink">Add</a>
+                  {% endif %}
+                  {% if model.change_url %}
+                    <a href="{{ model.change_url }}" class="button changelink">Change</a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {# Authentication and Authorization section #}
+    {% for app in app_list %}
+      {% if app.name == "Authentication and Authorization" %}
+        <div class="card">
+          <div class="card-header"><strong>{{ app.name }}</strong></div>
+          <div class="card-body">
+            <ul class="object-tools">
+              {% for model in app.models %}
+                <li>
+                  <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                  {% if model.add_url %}
+                    <a href="{{ model.add_url }}" class="button addlink">Add</a>
+                  {% endif %}
+                  {% if model.change_url %}
+                    <a href="{{ model.change_url }}" class="button changelink">Change</a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {# App lainnya (opsional) #}
+    {% for app in app_list %}
+      {% if app.name != "Inventory" and app.name != "Authentication and Authorization" %}
+        <div class="card">
+          <div class="card-header"><strong>{{ app.name }}</strong></div>
+          <div class="card-body">
+            <ul class="object-tools">
+              {% for model in app.models %}
+                <li>
+                  <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                  {% if model.add_url %}
+                    <a href="{{ model.add_url }}" class="button addlink">Add</a>
+                  {% endif %}
+                  {% if model.change_url %}
+                    <a href="{{ model.change_url }}" class="button changelink">Change</a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+{% endblock %}

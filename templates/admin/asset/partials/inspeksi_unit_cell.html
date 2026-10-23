@@ -1,0 +1,78 @@
+<div style="display:flex; flex-direction:column; gap:4px; min-width:140px;">
+    
+    <div style="display:flex; align-items:center; gap:4px; white-space:nowrap; flex-wrap:wrap;">
+        
+        <!-- ========================================== -->
+        <!-- KONDISI 1: JIKA USER ADALAH ATASAN (BUKAN SUPERUSER) -->
+        <!-- ========================================== -->
+        {% if is_atasan_only %}
+            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openInspeksiItemModal('{{ cn_sap }}', '{{ egi }}', '{{ equipment_type }}');" style="background:#28a745; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Lihat Detail Inspeksi">👁️Lihat</button>
+            <a href="{{ print_url }}" target="_blank" style="background:#6c757d; color:white; padding:3px 6px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:600;" title="Print PDF">🖨️ Print</a>
+            <a href="{{ pdf_url }}?download=true" style="background:#dc3545; color:white; padding:3px 6px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:600;" title="Download PDF">📄 Download</a>
+            
+            {% if status == 'WAITING' %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); approveInspeksiUnit('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:4px;" title="{{ approve_info_tooltip }}">✅ Approve</button>
+                <button onclick="event.preventDefault(); event.stopPropagation(); rejectApprovalDisposed('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:4px;" title="Tolak / Reject">❌ Reject</button>
+            {% endif %}
+
+        <!-- ========================================== -->
+        <!-- KONDISI 2: JIKA SUDAH DIISI OLEH STAFF / SUPERUSER -->
+        <!-- ========================================== -->
+        {% elif sudah_diisi %}
+            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openInspeksiItemModal('{{ cn_sap }}', '{{ egi }}', '{{ equipment_type }}');" style="background:#28a745; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Lihat Detail Inspeksi">👁️ Lihat</button>
+            <a href="{{ print_url }}" target="_blank" style="background:#6c757d; color:white; padding:3px 6px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:600;" title="Print PDF">🖨️ Print</a>
+            <a href="{{ pdf_url }}?download=true" style="background:#dc3545; color:white; padding:3px 6px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:600;" title="Download PDF">📄 Download</a>
+            
+            {% if status != 'APPROVED' or is_superuser %}
+                <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openInspeksiItemModal('{{ cn_sap }}', '{{ egi }}', '{{ equipment_type }}');" style="background:#ffc107; color:#212529; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Edit / Lihat Check Sheet Inspeksi">✏️ Ganti</button>
+                <button onclick="event.preventDefault(); event.stopPropagation(); hapusSemuaInspeksiDirect('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Hapus Inspeksi">🗑️ Delete</button>
+            {% endif %}
+            
+            {% if status == '' or status == 'DRAFT' or status == 'REJECTED' %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); submitApprovalInspeksiFromCell('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="{{ submit_info_tooltip }}">🚀 Submit Approval</button>
+            {% endif %}
+
+            <!-- Tombol Tambahan Khusus Superuser -->
+            {% if is_superuser and status == 'WAITING' %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); submitApprovalInspeksiFromCell('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:3px;" title="Approve">✅ Approve</button>
+                <button onclick="event.preventDefault(); event.stopPropagation(); rejectApprovalDisposed('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:3px;" title="Reject">❌ Reject</button>
+            {% endif %}
+
+        <!-- ========================================== -->
+        <!-- KONDISI 3: BELUM DIISI (KOSONG) -->
+        <!-- ========================================== -->
+        {% else %}
+            <button onclick="event.preventDefault(); event.stopPropagation(); openInspeksiItemModal('{{ cn_sap }}', '{{ egi }}', '{{ equipment_type }}');" style="background:#1883ff; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer;">📝 Input Inspeksi</button>
+            <span style="background:#fff3cd; color:#856404; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:bold;">Prog</span>
+            
+            <!-- Tombol Tambahan Khusus Superuser -->
+            {% if is_superuser and status == 'WAITING' %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); submitApprovalInspeksiFromCell('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:3px;" title="Approve">✅ Approve</button>
+                <button onclick="event.preventDefault(); event.stopPropagation(); rejectApprovalDisposed('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:3px;" title="Reject">❌ Reject</button>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- ========================================== -->
+    <!-- INFORMASI STATUS & TANGGAL BAWAH -->
+    <!-- ========================================== -->
+    {% if is_atasan_only %}
+        <div style="font-size:9px; color:#6c757d; font-style:italic; margin-top:2px;">Role: Atasan Approval</div>
+    {% elif sudah_diisi %}
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:4px;">
+            <div>
+                <span class="polling-status-waiting" 
+                      data-cn-sap="{{ cn_sap }}" 
+                      data-jenis="inspeksi"
+                      style="background:{{ badge_bg }}; color:{{ badge_color }}; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:bold;">
+                    {{ status_text }}
+                </span>
+                
+                {% if status == 'WAITING' and approver_name %}
+                    <br/><small style="color: #555; font-size: 9px;">Atasan: <b>{{ approver_name }}</b></small>
+                {% endif %}
+            </div>
+            <span style="font-size:9px; color:#6c757d; font-family:monospace;" title="Waktu aktivitas terakhir">📅 {{ info_waktu }}</span>
+        </div>
+    {% endif %}
+</div>

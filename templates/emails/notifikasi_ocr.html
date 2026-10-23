@@ -1,0 +1,182 @@
+<div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333333;">
+    📢 <strong>Pemberitahuan Sistem SI-MASTER:</strong><br><br>
+    Dokumen <span style="color: #0056b3; font-weight: bold;">{{ nama_dokumen }}</span> untuk unit <span style="color: #0056b3; font-weight: bold;">{{ cn_sap }}</span><br>
+    sudah di-upload oleh <strong>{{ user_pengupload }}</strong> pada tanggal <span style="color: #0056b3; font-weight: bold;">{{ tanggal_str }} </span> jam <span style="color: #0056b3; font-weight: bold;">{{ jam_str }} </span><br>
+    dengan status <span style="background-color: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px; font-weight: bold;">COMPLETE</span>.<br><br>
+
+    {# 🌟 PERBAIKAN: Menggunakan nested IF dengan urutan penutupan tag yang presisi #}
+    {% if ocr_valid is not None %}
+        {% if field_name == 'rca' or field_name == 'pengajuan_disposed' or field_name == 'foto_4_sisi' or field_name == 'inspeksi_unit' %}
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 500px; width: 100%; background-color: #f8f9fa; border: 1px solid #eeeeee; border-radius: 4px;">
+            <tr>
+                <td style="padding: 15px; font-family: Arial, sans-serif;">
+                    
+                    <div style="border-bottom: 2px solid #333333; padding-bottom: 5px; margin-bottom: 15px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; color: #222222;">
+                        HASIL VERIFIKASI DOKUMEN {{ nama_dokumen }}
+                    </div>
+
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 13px; margin-bottom: 15px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px;">
+                        <tr>
+                            <td style="padding: 15px; vertical-align: top;">
+                                {% if ocr_valid %}
+                                    <div style="font-weight: bold; color: #155724; margin-bottom: 8px; font-size: 14px;">
+                                        ✅ STATUS DOKUMEN: VALID
+                                    </div>
+                                    <div style="color: #155724; font-size: 13px; line-height: 1.6;">
+                                        <strong>📋 KETERANGAN:</strong>
+                                        <div style="margin-top: 5px; padding-left: 5px;">
+                                            {{ ocr_message|linebreaksbr }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div style="font-weight: bold; color: #721c24; margin-bottom: 8px; font-size: 14px;">
+                                        ⚠️ STATUS DOKUMEN: PERLU PERHATIAN
+                                    </div>
+                                    <div style="color: #721c24; font-size: 13px; line-height: 1.6;">
+                                        <strong>📋 KETERANGAN:</strong>
+                                        <div style="margin-top: 5px; padding-left: 5px;">
+                                            {{ ocr_message|linebreaksbr }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    {# ── KONDISI A: FOTO 4 SISI ── #}
+                    {% if field_name == 'foto_4_sisi' %}
+                    <div style="font-weight: bold; color: #555555; font-size: 12px; margin-bottom: 8px; margin-top: 10px;">ANALISIS DETEKSI 4 SISI:</div>
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 13px; margin-bottom: 15px; color: #222222; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; padding: 10px;">
+                        <tr>
+                            <td width="180" style="padding: 4px 0;">📷 Tampak Depan</td>
+                            <td width="10" style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_depan %} <span style="color: #155724;">✅ Terdeteksi</span> {% else %} <span style="color: #721c24;">❌ Tidak Terdeteksi</span> {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0;">📷 Tampak Belakang</td>
+                            <td style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_belakang %} <span style="color: #155724;">✅ Terdeteksi</span> {% else %} <span style="color: #721c24;">❌ Tidak Terdeteksi</span> {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0;">📷 Tampak Samping Kanan</td>
+                            <td style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_kanan %} <span style="color: #155724;">✅ Terdeteksi</span> {% else %} <span style="color: #721c24;">❌ Tidak Terdeteksi</span> {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0;">📷 Tampak Samping Kiri</td>
+                            <td style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_kiri %} <span style="color: #155724;">✅ Terdeteksi</span> {% else %} <span style="color: #721c24;">❌ Tidak Terdeteksi</span> {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    {# ── KONDISI B: INSPEKSI UNIT (CHECK SHEET) ── #}
+                    {% elif field_name == 'inspeksi_unit' %}
+                    <div style="font-weight: bold; color: #555555; font-size: 12px; margin-bottom: 8px; margin-top: 10px;">ANALISIS DETEKSI KELENGKAPAN CHECK SHEET:</div>
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 13px; margin-bottom: 15px; color: #222222; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; padding: 10px;">
+                        <tr>
+                            <td width="180" style="padding: 4px 0;">📋 Kesesuaian EGI (Model)</td>
+                            <td width="10" style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_valid or not "Model" in ocr_message %}
+                                    <span style="color: #155724;">✅ Sesuai ({{ egi_db }})</span>
+                                {% else %}
+                                    <span style="color: #721c24;">❌ Tidak Sesuai / Kosong</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0;">📋 Kesesuaian Serial Number</td>
+                            <td width="10" style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_valid or not "Serial Number" in ocr_message %}
+                                    <span style="color: #155724;">✅ Sesuai ({{ sn_db }})</span>
+                                {% else %}
+                                    <span style="color: #721c24;">❌ Tidak Sesuai / Kosong</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0;">✍️ Otorisasi / Tanda Tangan</td>
+                            <td width="10" style="padding: 4px 0;">:</td>
+                            <td style="padding: 4px 0; font-weight: bold;">
+                                {% if ocr_valid or not "tanda tangan" in ocr_message|lower %}
+                                    <span style="color: #155724;">✅ Tanda Tangan Valid (Approved)</span>
+                                {% else %}
+                                    <span style="color: #721c24;">❌ Belum Ditandatangani</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    {# ── KONDISI C: FORMAT LAMA (RCA & PENGAJUAN DISPOSED) ── #}
+                    {% else %}
+                    <div style="font-weight: bold; color: #555555; font-size: 12px; margin-bottom: 8px;">DATA TERBACA PADA DOKUMEN:</div>
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 13px; margin-bottom: 15px; color: #222222;">
+                        <tr>
+                            <td width="130" style="padding: 3px 0; vertical-align: top;">- Nama Dokumen</td>
+                            <td width="10" style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td style="padding: 3px 0; font-weight: bold;">{{ nama_dok_ocr|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 3px 0; vertical-align: top;">- Nomor Dokumen</td>
+                            <td width="10" style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td style="padding: 3px 0; font-weight: bold;">{{ no_dokumen|default:"-" }}</td>
+                        </tr>
+                        {% if field_name == 'rca' %}
+                        <tr>
+                            <td style="padding: 3px 0; vertical-align: top;">- Nilai RCA</td>
+                            <td width="10" style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td style="padding: 3px 0; font-weight: bold; color: #b21f2d;">{{ usd_max|default:"-" }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    {% endif %} {# 💡 SINTAKS FIX: Hanya butuh SATU endif di sini untuk menutup rangkaian (if foto_4_sisi -> elif inspeksi_unit -> else) #}
+
+                    {% if ocr_valid %}
+                    <div style="font-size: 13px; color: #555555; margin-bottom: 5px; margin-top: 5px;">Dokumen telah diverifikasi sesuai dengan identitas unit:</div>
+                    {% else %}
+                    <div style="font-size: 13px; color: #721c24; font-weight: bold; margin-bottom: 5px;">Data yang diharapkan dalam dokumen:</div>
+                    {% endif %}
+
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 13px; color: #222222; margin-bottom: 10px;">
+                        <tr>
+                            <td width="130" style="padding: 3px 0;">- CN SAP</td>
+                            <td width="10" style="padding: 3px 0;">:</td>
+                            <td style="padding: 3px 0; font-weight: bold;">{{ cn_sap }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 3px 0;">- EGI</td>
+                            <td width="10" style="padding: 3px 0;">:</td>
+                            <td style="padding: 3px 0; font-weight: bold;">{{ egi_db }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 3px 0;">- SN</td>
+                            <td width="10" style="padding: 3px 0;">:</td>
+                            <td style="padding: 3px 0; font-weight: bold;">{{ sn_db }}</td>
+                        </tr>
+                    </table>
+
+                    {% if not ocr_valid %}
+                    <div style="border-top: 1px dashed #cccccc; padding-top: 8px; margin-top: 10px; font-size: 13px; color: #721c24; font-weight: bold;">
+                        ⚠️ Mohon periksa kembali dokumen yang diupload.
+                    </div>
+                    {% endif %}
+                    
+                </td>
+            </tr>
+        </table>
+        {% endif %}  {# Penutup untuk if field_name == 'rca' or ... #}
+    {% endif %}      {# Penutup untuk if ocr_valid is not None #}
+
+    <br>Silakan cek pada sistem EAM SI-MASTER.<br><br>
+    Salam,<br>
+    Sistem SI-MASTER
+</div>

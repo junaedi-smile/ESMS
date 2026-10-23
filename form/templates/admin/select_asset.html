@@ -1,0 +1,70 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+
+<div id="content-main">
+    <h1>{{ header|default:"Pilih Aset untuk Inspeksi" }}</h1>
+
+    <form method="post" action="{% url 'form:select_asset' %}">
+
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <p class="errornote">{{ form.non_field_errors }}</p>
+        {% endif %}
+
+        <div class="module">
+            <h2>Pilih Asset</h2>
+            <fieldset class="module aligned">
+                
+                <div class="form-row field-asset">
+                    <div>
+                        {{ form.asset.errors }}
+                        <label class="required" for="{{ form.asset.id_for_label }}">{{ form.asset.label }}:</label>
+                        {{ form.asset }}
+                        {% if form.asset.help_text %}
+                            <p class="help">{{ form.asset.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="module">
+            <h2>Data Inspektur</h2>
+            <fieldset class="module aligned">
+                
+                <div class="form-row field-pic_inspector">
+                    <div>
+                        {{ form.pic_inspector.errors }}
+                        <label class="required" for="{{ form.pic_inspector.id_for_label }}">{{ form.pic_inspector.label }}:</label>
+                        {{ form.pic_inspector }}
+                        {% if form.pic_inspector.help_text %}
+                            <p class="help">{{ form.pic_inspector.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row field-atasan_inspector">
+                    <div>
+                        {{ form.atasan_inspector.errors }}
+                        <label class="required" for="{{ form.atasan_inspector.id_for_label }}">{{ form.atasan_inspector.label }}:</label>
+                        {{ form.atasan_inspector }}
+                        {% if form.atasan_inspector.help_text %}
+                            <p class="help">{{ form.atasan_inspector.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="submit-row">
+            <input type="submit" value="Buat Form Check Sheet" class="default">
+            <p class="deletelink-box">
+                <a href="{% url 'admin:index' %}" class="deletelink">Batal</a>
+            </p>
+        </div>
+    </form>
+</div>
+{% endblock %}

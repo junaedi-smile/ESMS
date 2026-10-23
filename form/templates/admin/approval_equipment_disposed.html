@@ -1,0 +1,52 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Detail Pengajuan Equipment Disposed</h1>
+    <p><strong>Judul:</strong> {{ form_pengajuan.judul }}</p>
+    <p><strong>Status:</strong> {{ form_pengajuan.get_status_display }}</p>
+    <p><strong>Diajukan Oleh:</strong> {{ form_pengajuan.diajukan_oleh.username }}</p>
+    
+    <h2>Detail Form</h2>
+    <ul>
+        <li><strong>CN SAP:</strong> {{ form_pengajuan.CN_SAP }}</li>
+        <li><strong>Group:</strong> {{ form_pengajuan.GROUP }}</li>
+        </ul>
+
+    <h2>Riwayat Persetujuan</h2>
+    {% if logs %}
+        <ul>
+        {% for log in logs %}
+            <li>
+                <strong>Langkah {{ log.langkah.urutan }}:</strong> {{ log.langkah.nama_langkah }} ({{ log.langkah.penanggung_jawab.username }})
+                {% if log.disetujui %}
+                    <span style="color: green;">✅ Disetujui</span>
+                {% else %}
+                    <span style="color: red;">❌ Ditolak</span>
+                {% endif %}
+                pada {{ log.tanggal_persetujuan|date:"d M Y H:i" }}
+                {% if log.komentar %}: "{{ log.komentar }}"{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Belum ada riwayat persetujuan.</p>
+    {% endif %}
+
+    {% if is_current_approver and form_pengajuan.status == 'PENDING' %}
+    <h2>Tindakan Anda</h2>
+    <form action="{% url 'inside_admin:approval_equipment_disposed' form_id=form_pengajuan.id %}" method="post">
+        {% csrf_token %}
+        <p><strong>Komentar:</strong></p>
+        <textarea name="komentar" rows="4" cols="50"></textarea>
+        <br>
+        <button type="submit" name="approve" value="1">Setujui</button>
+        <button type="submit" name="reject" value="1" style="background-color: red; color: white;">Kembalikan / Tolak</button>
+    </form>
+    {% elif form_pengajuan.status != 'PENDING' %}
+        <p>Pengajuan ini sudah selesai.</p>
+    {% else %}
+        <p>Anda bukan penanggung jawab untuk langkah persetujuan saat ini.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Inspection Detail: {{ session.cn_sap }}</h2>
+
+<h3>Summary per Kategori</h3>
+<table border="1">
+    <tr>
+        <th>Kategori</th>
+        <th>Total</th>
+        <th>GOOD</th>
+        <th>BAD</th>
+        <th>NA</th>
+        <th>GOOD %</th>
+        <th>BAD %</th>
+        <th>NA %</th>
+    </tr>
+    {% for c in category_summary %}
+    <tr>
+        <td>{{ c.item__category__name }}</td>
+        <td>{{ c.total }}</td>
+        <td>{{ c.good }}</td>
+        <td>{{ c.bad }}</td>
+        <td>{{ c.na }}</td>
+        <td>{{ c.good_pct|floatformat:1 }}%</td>
+        <td>{{ c.bad_pct|floatformat:1 }}%</td>
+        <td>{{ c.na_pct|floatformat:1 }}%</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Global Summary</h3>
+<table border="1">
+    <tr>
+        <th>Total</th>
+        <th>GOOD</th>
+        <th>BAD</th>
+        <th>NA</th>
+        <th>GOOD %</th>
+        <th>BAD %</th>
+        <th>NA %</th>
+    </tr>
+    <tr>
+        <td>{{ global_summary.total }}</td>
+        <td>{{ global_summary.good }}</td>
+        <td>{{ global_summary.bad }}</td>
+        <td>{{ global_summary.na }}</td>
+        <td>{{ global_summary.good_pct|floatformat:1 }}%</td>
+        <td>{{ global_summary.bad_pct|floatformat:1 }}%</td>
+        <td>{{ global_summary.na_pct|floatformat:1 }}%</td>
+    </tr>
+</table>
+
+
+</div>
+{% endblock %}

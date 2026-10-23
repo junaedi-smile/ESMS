@@ -1,0 +1,82 @@
+<div style="display:flex; flex-direction:column; gap:4px; min-width:180px;">
+    
+    <div style="display:flex; align-items:center; gap:4px; white-space:nowrap; flex-wrap:wrap;">
+        
+        <!-- ========================================== -->
+        <!-- 1. KONDISI: USER ADALAH ATASAN (BUKAN SUPERUSER) -->
+        <!-- ========================================== -->
+        {% if is_atasan_only %}
+            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openViewFotoModal('{{ cn_sap }}');" style="background:#28a745; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Lihat Detail Foto">👁️ Lihat</button>
+            
+            {% if status == 'WAITING' %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); approveFoto4Sisi('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:4px;" title="{{ approve_info_tooltip }}">✅ Approve</button>
+                <button onclick="event.preventDefault(); event.stopPropagation(); rejectApprovalDisposed('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:4px;" title="Tolak / Reject">❌ Reject</button>
+            {% endif %}
+
+        <!-- ========================================== -->
+        <!-- 2. KONDISI: FOTO LENGKAP -->
+        <!-- ========================================== -->
+        {% elif semua_lengkap %}
+            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openViewFotoModal('{{ cn_sap }}');" style="background:#28a745; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Lihat Detail Foto">👁️ Lihat</button>
+            <a href="{{ print_url }}" target="_blank" style="background:#6c757d; color:white; padding:3px 6px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:600;" title="Print PDF">🖨️ Print</a>
+            <a href="{{ pdf_url }}?download=true" style="background:#dc3545; color:white; padding:3px 6px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:600;" title="Download PDF">📄 Download</a>
+
+            {% if status != 'APPROVED' or is_superuser %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); openFoto4SisiModal('{{ cn_sap }}','{{ cn_ellipse }}','{{ sn }}','{{ egi }}',{{ foto_data_json }});" style="background:#ffc107; color:#212529; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;">✏️ Ganti</button>
+                <button onclick="event.preventDefault(); event.stopPropagation(); hapusSemuaFotoDirect('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="Hapus Semua Foto & Reset Status ke Draft">🗑️ Delete</button>
+            {% endif %}
+
+            {% if status == '' or status == 'DRAFT' or status == 'REJECTED' %}
+                <button onclick="event.preventDefault(); event.stopPropagation(); submitApprovalDisposedFromCell('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;" title="{{ submit_info_tooltip }}">🚀 Submit Approval</button>
+            {% endif %}
+
+        <!-- ========================================== -->
+        <!-- 3. KONDISI: SEBAGIAN FOTO TERISI -->
+        <!-- ========================================== -->
+        {% elif jumlah_foto > 0 %}
+            <button onclick="event.preventDefault(); event.stopPropagation(); openFoto4SisiModal('{{ cn_sap }}','{{ cn_ellipse }}','{{ sn }}','{{ egi }}',{{ foto_data_json }});" style="background:#ffc107; color:#212529; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer;">✏️ Lengkapi</button>
+            <span style="background:#fff3cd; color:#856404; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:bold;">{{ jumlah_foto }}/{{ total_foto }} Foto</span>
+
+        <!-- ========================================== -->
+        <!-- 4. KONDISI: BELUM ADA FOTO -->
+        <!-- ========================================== -->
+        {% else %}
+            <button onclick="event.preventDefault(); event.stopPropagation(); openFoto4SisiModal('{{ cn_sap }}','{{ cn_ellipse }}','{{ sn }}','{{ egi }}',null);" style="background:#1883ff; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer;">📸 Upload Foto</button>
+            <span style="background:#fff3cd; color:#856404; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:bold;">Prog</span>
+        {% endif %}
+
+        <!-- ========================================== -->
+        <!-- 👑 TOMBOL GLOBAL SUPERUSER (Selalu Muncul Jika Status WAITING) -->
+        <!-- ========================================== -->
+        {% if is_superuser and status == 'WAITING' %}
+            <button onclick="event.preventDefault(); event.stopPropagation(); submitApprovalDisposedFromCell('{{ cn_sap }}');" style="background:#17a2b8; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:3px;" title="Approve">✅ Approve</button>
+            <button onclick="event.preventDefault(); event.stopPropagation(); rejectApprovalDisposed('{{ cn_sap }}');" style="background:#dc3545; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; margin-left:3px;" title="Reject">❌ Reject</button>
+        {% endif %}
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- INFORMASI STATUS & WAKTU DI BAWAH (Hanya 1 Badge + Atribut Polling) -->
+    <!-- ========================================== -->
+    {% if is_atasan_only %}
+        <div style="font-size:9px; color:#6c757d; font-style:italic; margin-top:2px;">Role: Atasan Approval</div>
+    {% elif semua_lengkap or jumlah_foto > 0 %}
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:4px;">
+            <div>
+                <!-- Badge status utama yang disisipi class polling-status-waiting -->
+                <span class="polling-status-waiting" 
+                      data-cn-sap="{{ cn_sap }}" 
+                      data-jenis="foto"
+                      style="background:{{ badge_bg }}; color:{{ badge_color }}; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:bold;">
+                    {{ status_text }}
+                </span>
+                
+                {% if status == 'WAITING' and approver_name %}
+                    <br/><small style="color: #555; font-size: 9px;">Atasan: <b>{{ approver_name }}</b></small>
+                {% endif %}
+            </div>
+            <span style="font-size:9px; color:#6c757d; font-family:monospace;" title="Waktu aktivitas terakhir">📅 {{ info_waktu }}</span>
+        </div>
+    {% endif %}
+
+</div>

@@ -1,0 +1,147 @@
+/* Sisa kode CSS Anda, ini juga sudah benar */
+body {
+    background-image: url('/static/img/login_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card kontainer */
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 300px;
+    backdrop-filter: blur(6px);
+}
+
+/* Judul / Branding */
+.brand-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #003366;
+    text-align: center;
+    margin-bottom: 0.3rem;
+}
+
+.brand-subtitle {
+    font-size: 0.7rem;
+    color: #336699;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 0 0 5px 0;
+}
+
+/* Styling untuk pesan error - DITINGKATKAN */
+.login-card .error-box {
+    background-color: #e57373; /* Merah solid, sedikit lebih terang */
+    color: rgb(255, 255, 255);
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 8px;  /* Membulatkan sudut */
+    position: relative;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 1;
+    transition: opacity 0.5s ease; /* Animasi fade out */
+    
+    /* Gunakan flexbox untuk perataan yang lebih baik */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Jarak antara ikon dan teks */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-box.fade-out {
+    opacity: 0;
+}
+
+.alert-icon {
+  display: flex; /* Untuk memastikan SVG terpusat */
+  align-items: center;
+}
+
+.close-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.close-btn:hover {
+    color: #ddd;
+}
+
+
+/* Input form */
+.login-card input[type="text"],
+.login-card input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+.login-card-form{
+    padding-top: 30px;
+}
+.login-card input:focus {
+    border-color: #005499;
+    outline: none;
+}
+
+/* Tombol login */
+.btn-login {
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-login:hover {
+    background-color: #005499;
+}
+
+/* Link di bawah form */
+.login-links {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.login-links a {
+    color: #003366;
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+.login-links a:hover {
+    text-decoration: underline;
+}
+/* Tulisan dibawah form */

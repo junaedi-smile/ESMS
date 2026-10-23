@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lampiran Capex — {{ data.CN_SAP }}</title>
+    <style>
+        /* ── Reset & Base ─────────────────────────────────── */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #222;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 15mm 15mm 20mm 15mm;
+            background: #fff;
+        }
+
+        /* ── Kop Surat ────────────────────────────────────── */
+        .kop-surat {
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid #1883ff;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .kop-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            margin-right: 16px;
+        }
+
+        .kop-info {
+            flex: 1;
+        }
+
+        .kop-info .company-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1883ff;
+            letter-spacing: 0.5px;
+        }
+
+        .kop-info .company-sub {
+            font-size: 10px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .kop-doc {
+            text-align: right;
+            min-width: 180px;
+        }
+
+        .kop-doc table {
+            margin-left: auto;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+        .kop-doc td {
+            padding: 2px 6px;
+            border: 1px solid #ccc;
+        }
+
+        .kop-doc td:first-child {
+            background: #f0f4ff;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* ── Judul Dokumen ────────────────────────────────── */
+        .doc-title {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .doc-title h2 {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a1a1a;
+            border-bottom: 2px solid #1883ff;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        /* ── Section ──────────────────────────────────────── */
+        .section {
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            background: #1883ff;
+            color: #fff;
+            font-weight: bold;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 3px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Grid data ────────────────────────────────────── */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .data-grid.col-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .data-grid.col-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .data-item {
+            padding: 6px 10px;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-item:nth-child(3n) {
+            border-right: none;
+        }
+
+        .data-grid.col-2 .data-item:nth-child(2n) {
+            border-right: none;
+        }
+
+        .data-grid.col-1 .data-item {
+            border-right: none;
+        }
+
+        .data-item .label {
+            font-size: 9px;
+            color: #888;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .data-item .value {
+            font-size: 11px;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .data-item .value.currency {
+            color: #1883ff;
+            font-weight: bold;
+        }
+
+        .data-item .value.empty {
+            color: #bbb;
+            font-style: italic;
+        }
+
+        /* ── Tanda Tangan ─────────────────────────────────── */
+        .ttd-section {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .ttd-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .ttd-header {
+            background: #f0f4ff;
+            padding: 5px;
+            font-weight: bold;
+            font-size: 10px;
+            color: #1883ff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ttd-space {
+            height: 60px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ttd-nama {
+            padding: 4px 6px;
+            font-weight: bold;
+            font-size: 10px;
+            min-height: 18px;
+        }
+
+        .ttd-jabatan {
+            padding: 3px 6px 5px;
+            font-size: 9px;
+            color: #666;
+            min-height: 16px;
+        }
+
+        /* ── Footer ───────────────────────────────────────── */
+        .doc-footer {
+            margin-top: 20px;
+            padding-top: 8px;
+            border-top: 1px solid #ddd;
+            font-size: 9px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ── Print styles ─────────────────────────────────── */
+        @media print {
+            body { background: #fff; }
+            .page { margin: 0; padding: 10mm; width: 100%; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+        }
+
+        /* ── Tombol aksi (hanya muncul di layar) ──────────── */
+        .action-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-print {
+            background: #1883ff;
+            color: #fff;
+        }
+
+        .btn-pdf {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .btn-close {
+            background: #f0f0f0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- ── KOP SURAT ─────────────────────────────────────── -->
+    <div class="kop-surat">
+        <img src="/static/img/logo_perusahaan.png"
+             class="kop-logo"
+             alt="Logo PT Saptaindra Sejati"/>
+        <div class="kop-info">
+            <div class="company-name">PT SAPTAINDRA SEJATI</div>
+            <div class="company-sub">
+                Lampiran Capital Expenditure (CAPEX) — Equipment Disposed
+            </div>
+        </div>
+        <div class="kop-doc">
+            <table>
+                <tr>
+                    <td>No. Dokumen (Sistem)</td>
+                    <td>
+                        {{ data.doc_number_auto|default:"—" }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>No. Dokumen (Manual)</td>
+                    <td>
+                        {{ data.doc_number_manual|default:"—" }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tanggal</td>
+                    <td>
+                        {% now "d F Y" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dibuat Oleh</td>
+                    <td>{{ request.user.get_full_name|default:request.user.username }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── JUDUL ──────────────────────────────────────────── -->
+    <div class="doc-title">
+        <h2>Lampiran Capital Expenditure (CAPEX)</h2>
+    </div>
+
+    <!-- ── SECTION 1: Identitas Unit ─────────────────────── -->
+    <div class="section">
+        <div class="section-title">1. Identitas Unit</div>
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="label">CN SAP</div>
+                <div class="value">{{ data.CN_SAP|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Class Equipment (GROUP)</div>
+                <div class="value">{{ data.GROUP|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Type</div>
+                <div class="value">{{ data.TYPE|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">EGI</div>
+                <div class="value">{{ data.EGI|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Hour Meter (HM/SMR)</div>
+                <div class="value">{{ data.HM_SMR|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">SPO Equipment</div>
+                <div class="value">{{ data.SPO_EQUIPMENT|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">% SPO</div>
+                <div class="value">{{ data.PERSENTASE_SPO|default:"—" }} %</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Location</div>
+                <div class="value">{{ data.LOCATION|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Date Delivery</div>
+                <div class="value">{{ data.DATE_DELIVERY|default:"—" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 2: Nilai Finansial ─────────────────────── -->
+    <div class="section">
+        <div class="section-title">2. Nilai Finansial</div>
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="label">Nilai Akuisisi</div>
+                <div class="value currency">
+                    Rp {{ data.NILAI_AKUISISI|default:"0" }}
+                </div>
+            </div>
+            <div class="data-item">
+                <div class="label">NBV (Net Book Value)</div>
+                <div class="value currency">
+                    Rp {{ data.NBV|default:"0" }}
+                </div>
+            </div>
+            <div class="data-item">
+                <div class="label">RV (Residual Value)</div>
+                <div class="value currency">
+                    Rp {{ data.RV|default:"0" }}
+                </div>
+            </div>
+            <div class="data-item">
+                <div class="label">Status NBV</div>
+                <div class="value">{{ data.NBV_STATUS|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Life Equipment (Tahun)</div>
+                <div class="value">{{ data.LIFE_EQUIPMENT|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Standar Depresiasi (%)</div>
+                <div class="value">{{ data.STANDAR_DEPRE_EQUIPMENT|default:"—" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 3: Kondisi & Analisis ──────────────────── -->
+    <div class="section">
+        <div class="section-title">3. Kondisi & Analisis</div>
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="label">Kondisi Body</div>
+                <div class="value">{{ data.KONDISI_BODY|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Kondisi Frame</div>
+                <div class="value">{{ data.KONDISI_FRAME|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Kondisi Komponen</div>
+                <div class="value">{{ data.KONDISI_KOMPONEN|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">% Life Comp SPO</div>
+                <div class="value">{{ data.PROSENTASE_LIFE_COMP_SPO|default:"—" }} %</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Replacement</div>
+                <div class="value">{{ data.REPLACEMENT|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+                <div class="label">Nilai Sisa Komponen</div>
+                <div class="value currency">
+                    Rp {{ data.NILAI_SISA_COMP|default:"0" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 4: Biaya Perbaikan ─────────────────────── -->
+    <div class="section">
+        <div class="section-title">4. Biaya Perbaikan & Penggantian</div>
+        <div class="data-grid col-2">
+            <div class="data-item">
+                <div class="label">Cost Repair</div>
+                <div class="value currency">
+                    Rp {{ data.COST_REPAIR|default:"0" }}
+                </div>
+            </div>
+            <div class="data-item">
+                <div class="label">Harga New</div>
+                <div class="value currency">
+                    Rp {{ data.HARGA_NEW|default:"0" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 5: Obsolete ────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">5. Keterangan Obsolete</div>
+        <div class="data-grid col-1">
+            <div class="data-item">
+                <div class="label">Obsolete</div>
+                <div class="value">
+                    {{ data.OBSOLETE|default:"—"|linebreaksbr }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TANDA TANGAN ───────────────────────────────────── -->
+    <div class="ttd-section">
+        <div class="ttd-box">
+            <div class="ttd-header">Dibuat Oleh</div>
+            <div class="ttd-space"></div>
+            <div class="ttd-nama">
+                {{ data.dibuat_nama|default:"________________" }}
+            </div>
+            <div class="ttd-jabatan">
+                {{ data.dibuat_jabatan|default:"Jabatan" }}
+            </div>
+        </div>
+        <div class="ttd-box">
+            <div class="ttd-header">Diperiksa Oleh</div>
+            <div class="ttd-space"></div>
+            <div class="ttd-nama">
+                {{ data.diperiksa_nama|default:"________________" }}
+            </div>
+            <div class="ttd-jabatan">
+                {{ data.diperiksa_jabatan|default:"Jabatan" }}
+            </div>
+        </div>
+        <div class="ttd-box">
+            <div class="ttd-header">Disetujui Oleh</div>
+            <div class="ttd-space"></div>
+            <div class="ttd-nama">
+                {{ data.disetujui_nama|default:"________________" }}
+            </div>
+            <div class="ttd-jabatan">
+                {{ data.disetujui_jabatan|default:"Jabatan" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FOOTER ─────────────────────────────────────────── -->
+    <div class="doc-footer">
+        <span>
+            PT Saptaindra Sejati — Lampiran CAPEX
+        </span>
+        <span>
+            Dicetak: {% now "d/m/Y H:i" %} —
+            {{ request.user.get_full_name|default:request.user.username }}
+        </span>
+    </div>
+
+</div>
+
+<!-- ── TOMBOL AKSI (hanya di layar, tidak ikut print) ───── -->
+{% if is_preview %}
+<div class="action-bar no-print">
+    <button class="btn-action btn-close"
+            onclick="window.close()">
+        ✕ Tutup
+    </button>
+    <button class="btn-action btn-print"
+            onclick="window.print()">
+        🖨️ Print
+    </button>
+    <button class="btn-action btn-pdf"
+            onclick="downloadPDF()">
+        📥 Download PDF
+    </button>
+</div>
+
+<script>
+function downloadPDF() {
+    // Kirim form yang sama ke endpoint PDF
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/form/lampiran-capex/preview/';
+
+    // Ambil semua data dari URL params atau data yang sudah ada
+    var data = {{ data|safe }};
+    data.output_type = 'pdf';
+    data.csrfmiddlewaretoken = '{{ csrf_token }}';
+
+    for (var key in data) {
+        var input = document.createElement('input');
+        input.type  = 'hidden';
+        input.name  = key;
+        input.value = data[key] || '';
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Respon Approval</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; text-align: center; padding-top: 100px; }
+        .card { background: white; max-width: 400px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        .error { color: #dc3545; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if success %}
+            <div class="success">Proses Berhasil!</div>
+            <p>{{ message }}</p>
+        {% else %}
+            <div class="error">Proses Gagal</div>
+            <p>{{ message }}</p>
+        {% endif %}
+        <br>
+        <a href="http://127.0.0.1:8001/admin/" style="color: #007bff; text-decoration: none;">Kembali ke Dashboard Sistem</a>
+    </div>
+</body>
+</html>

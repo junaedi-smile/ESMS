@@ -1,0 +1,78 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}Daftar Status Bulanan - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Daftar Status Bulanan</h1>
+    <p>Ini adalah daftar status bulanan yang Anda input.</p>
+    
+    <a href="{% url 'asset:equipment_monthly_status_create' %}" class="btn btn-primary">Tambah Status Baru</a>
+    
+    <div class="card my-4">
+        <div class="card-body">
+            {% if monthly_statuses %}
+            <ul class="list-group">
+                {% for status in monthly_statuses %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ status.asset_equipment.CN_SAP }}</strong> ({{ status.asset_equipment.TYPE }})
+                        <br>
+                        Status: {{ status.get_STATUS_EQUIPMENT_display }} pada {{ status.MONTH|date:"F Y" }}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Anda belum memiliki data status bulanan. Silakan tambahkan satu.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tambahkan tautan kembali ke halaman utama admin -->
+    <a href="{% url 'admin:index' %}">Kembali ke Dashboard Admin</a>
+</div>
+
+<style>
+    /* Styling dasar menggunakan Bootstrap-like classes untuk konsistensi admin */
+    .main-content {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        color: #343a40;
+        margin-bottom: 1rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+<h2>Inspection Summary - CN {{ session.asset.CN_SAP }}</h2>
+
+{% for category, data in summary_by_category.items %}
+  <h3>{{ category }}</h3>
+  <ul>
+    <li>GOOD: {{ data.GOOD }} ({{ data.GOOD_pct }}%)</li>
+    <li>BAD: {{ data.BAD }} ({{ data.BAD_pct }}%)</li>
+    <li>NO: {{ data.NO }} ({{ data.NO_pct }}%)</li>
+  </ul>
+{% endfor %}
+
+<hr>
+<h3>Global Summary</h3>
+<ul>
+  <li>GOOD: {{ global_summary.GOOD }} ({{ global_summary.GOOD_pct }}%)</li>
+  <li>BAD: {{ global_summary.BAD }} ({{ global_summary.BAD_pct }}%)</li>
+  <li>NO: {{ global_summary.NO }} ({{ global_summary.NO_pct }}%)</li>
+</ul>
+
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="main-content">
+    <h1>Daftar Pengajuan Anda</h1>
+    <ul>
+        {% for pengajuan in pengajuan_list %}
+            <li>
+                <strong>{{ pengajuan.judul }}</strong> - Status: {{ pengajuan.get_status_display }}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

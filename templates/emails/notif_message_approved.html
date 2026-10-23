@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Permintaan Approval Dokumen Disposed</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px;">
+    <div style="max-width: 600px; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin: 0 auto;">
+        
+        <h2 style="color: #0056b3; margin-top: 0; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+            📢 Permintaan Approval Dokumen
+        </h2>
+        
+        <p style="color: #333333; font-size: 15px;">
+            Halo <strong>{{ approver_name }}</strong>,
+        </p>
+        
+        <p style="color: #555555; font-size: 14px; line-height: 1.5;">
+            Pengguna <strong>{{ submitted_by }}</strong> telah melakukan submit dokumen <strong>{{ form_title }}</strong> (CN SAP: <strong>{{ cn_sap }}</strong>) dan memerlukan persetujuan Anda.
+        </p>
+        
+        <div style="background-color: #f8f9fa; border-left: 4px solid #17a2b8; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="margin: 0 0 8px 0; color: #333; font-size: 14px;"><strong>Detail Unit:</strong></p>
+            <ul style="margin: 0; padding-left: 20px; color: #555; font-size: 14px;">
+                <li>CN SAP: <strong>{{ cn_sap }}</strong></li>
+                <li>EGI: {{ egi_db }}</li>
+                <li>Serial Number (SN): {{ sn_db }}</li>
+                <li>Waktu Pengajuan: {{ tanggal_str }} pukul {{ jam_str }} WITA</li>
+            </ul>
+        </div>
+        
+        <!-- 🛑 TOMBOL ACTIONABLE EMAIL -->
+        <p style="color: #333; font-size: 14px; text-align: center; font-weight: bold;">Pilih tindakan langsung:</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="{{ approve_url }}" style="background-color: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; display: inline-block; margin-right: 10px;">✅ APPROVE</a>
+            <a href="{{ reject_url }}" style="background-color: #dc3545; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; display: inline-block;">❌ REJECT</a>
+        </div>
+        
+        <p style="color: #555555; font-size: 13px; line-height: 1.5; font-style: italic;">
+            *Catatan: Tombol di atas memiliki masa aktif 3 hari. Jika tombol tidak berfungsi, silakan login ke <a href="{{ system_url }}">Sistem Asset Management</a>.
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #eaeaea; margin: 30px 0;">
+        
+        <p style="color: #888888; font-size: 12px; text-align: center; margin: 0;">
+            Email otomatis ini digenerate oleh sistem <strong>PT Saptaindra Sejati - Asset Management</strong>. Mohon tidak membalas email ini.
+        </p>
+    </div>
+</body>
+</html>

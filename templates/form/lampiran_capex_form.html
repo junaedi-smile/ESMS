@@ -1,0 +1,580 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif;">
+
+    <h1>{{ title }}</h1>
+
+    <!-- ── STEP 1: Cari Unit ──────────────────────────────────── -->
+    <div id="step-lookup" style="
+        background: #fff;
+        border-radius: 10px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-left: 4px solid #1883ff;
+    ">
+        <h3 style="margin-top:0; color:#1883ff;">
+            🔍 Step 1 — Cari Unit berdasarkan CN SAP
+        </h3>
+
+        <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+            <div>
+                <label style="display:block; font-size:12px; color:#888; margin-bottom:4px;">
+                    CN SAP
+                </label>
+                <input
+                    type="text"
+                    id="cn_sap_input"
+                    value="{{ initial_cn_sap }}"
+                    placeholder="Contoh: 1000012345"
+                    style="
+                        padding: 9px 14px;
+                        border: 1.5px solid #ddd;
+                        border-radius: 7px;
+                        font-size: 14px;
+                        width: 260px;
+                    "
+                    autocomplete="off"
+                />
+            </div>
+            <button
+                type="button"
+                onclick="lookupAsset()"
+                style="
+                    padding: 9px 20px;
+                    background: #1883ff;
+                    color: #fff;
+                    border: none;
+                    border-radius: 7px;
+                    font-size: 14px;
+                    cursor: pointer;
+                "
+            >
+                🔍 Cari & Isi Otomatis
+            </button>
+        </div>
+
+        <!-- Status lookup -->
+        <div id="lookup-status" style="margin-top:12px; font-size:13px;"></div>
+
+        <!-- Preview data yang ditemukan -->
+        <div id="asset-preview" style="
+            display: none;
+            margin-top: 16px;
+            background: #f0f9f0;
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 16px;
+        ">
+            <strong style="color:#28a745;">✅ Unit ditemukan:</strong>
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 10px;
+                margin-top: 12px;
+                font-size: 13px;
+            " id="preview-grid">
+            </div>
+        </div>
+    </div>
+
+    <!-- ── STEP 2: Isi Form ───────────────────────────────────── -->
+    <div id="step-form" style="
+        background: #fff;
+        border-radius: 10px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    ">
+        <h3 style="margin-top:0; color:#333;">
+            📋 Step 2 — Lengkapi Form Lampiran Capex
+        </h3>
+
+        <form method="post" id="main-form">
+            {% csrf_token %}
+
+            <!-- Field tersembunyi CN_SAP (nilai sebenarnya yang dikirim) -->
+            <input type="hidden" name="CN_SAP" id="field-CN_SAP"
+                   value="{{ form.CN_SAP.value|default:'' }}"/>
+
+            <!-- ── Section: Data Auto-fill (readonly) ── -->
+            <fieldset style="
+                border: 1.5px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 20px;
+            ">
+                <legend style="
+                    background: #e8f4fd;
+                    color: #1883ff;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 13px;
+                    font-weight: 600;
+                ">
+                    🤖 Data Otomatis dari Sistem (tidak bisa diedit)
+                </legend>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;">
+                    <!-- ✅ GANTI dengan ini — tidak perlu custom filter -->
+                    <!-- ── Section: Data Auto-fill (readonly) ── -->
+                    <fieldset style="
+                        border: 1.5px solid #e0e0e0;
+                        border-radius: 8px;
+                        padding: 16px 20px;
+                        margin-bottom: 20px;
+                    ">
+                        <legend style="
+                            background: #e8f4fd;
+                            color: #1883ff;
+                            padding: 4px 12px;
+                            border-radius: 20px;
+                            font-size: 13px;
+                            font-weight: 600;
+                        ">
+                            🤖 Data Otomatis dari Sistem (tidak bisa diedit)
+                        </legend>
+
+                        <div style="display:grid;
+                                    grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+                                    gap:16px;">
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">CN SAP</label>
+                                <input type="text" id="display-CN_SAP"
+                                    value="{{ form.CN_SAP.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">Class Equipment</label>
+                                <input type="text" id="display-GROUP"
+                                    value="{{ form.GROUP.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">Type</label>
+                                <input type="text" id="display-TYPE"
+                                    value="{{ form.TYPE.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">EGI</label>
+                                <input type="text" id="display-EGI"
+                                    value="{{ form.EGI.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">Hour Meter</label>
+                                <input type="text" id="display-HM_SMR"
+                                    value="{{ form.HM_SMR.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">SPO Equipment</label>
+                                <input type="text" id="display-SPO_EQUIPMENT"
+                                    value="{{ form.SPO_EQUIPMENT.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:11px; color:#888;
+                                            font-weight:600; margin-bottom:4px;">% SPO</label>
+                                <input type="text" id="display-PERSENTASE_SPO"
+                                    value="{{ form.PERSENTASE_SPO.value|default:'' }}"
+                                    readonly style="width:100%; padding:8px 10px;
+                                        border:1.5px solid #ddd; border-radius:6px;
+                                        background:#f5f5f5; font-size:13px;
+                                        color:#555; box-sizing:border-box;"/>
+                            </div>
+
+                        </div>
+                    </fieldset>                  
+                </div>
+            </fieldset>
+
+            <!-- ── Section: Data Manual (diisi user) ── -->
+            <fieldset style="
+                border: 1.5px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 20px;
+            ">
+                <legend style="
+                    background: #fff8e1;
+                    color: #f57c00;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 13px;
+                    font-weight: 600;
+                ">
+                    ✏️ Data Manual (wajib diisi)
+                </legend>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;">
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Nilai Akuisisi
+                        </label>
+                        {{ form.NILAI_AKUISISI }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.NILAI_AKUISISI.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">NBV</label>
+                        {{ form.NBV }}
+                        <div style="color:red; font-size:11px;">{{ form.NBV.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">RV</label>
+                        {{ form.RV }}
+                        <div style="color:red; font-size:11px;">{{ form.RV.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Status NBV
+                        </label>
+                        {{ form.NBV_STATUS }}
+                        <div style="color:red; font-size:11px;">{{ form.NBV_STATUS.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Date Delivery
+                        </label>
+                        {{ form.DATE_DELIVERY }}
+                        <div style="color:red; font-size:11px;">{{ form.DATE_DELIVERY.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Life Equipment
+                        </label>
+                        {{ form.LIFE_EQUIPMENT }}
+                        <div style="color:red; font-size:11px;">{{ form.LIFE_EQUIPMENT.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Standar Depresiasi
+                        </label>
+                        {{ form.STANDAR_DEPRE_EQUIPMENT }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.STANDAR_DEPRE_EQUIPMENT.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Replacement
+                        </label>
+                        {{ form.REPLACEMENT }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.REPLACEMENT.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Kondisi Body
+                        </label>
+                        {{ form.KONDISI_BODY }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.KONDISI_BODY.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Kondisi Frame
+                        </label>
+                        {{ form.KONDISI_FRAME }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.KONDISI_FRAME.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Kondisi Komponen
+                        </label>
+                        {{ form.KONDISI_KOMPONEN }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.KONDISI_KOMPONEN.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            % Life Comp SPO
+                        </label>
+                        {{ form.PROSENTASE_LIFE_COMP_SPO }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.PROSENTASE_LIFE_COMP_SPO.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Cost Repair
+                        </label>
+                        {{ form.COST_REPAIR }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.COST_REPAIR.errors }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Harga New
+                        </label>
+                        {{ form.HARGA_NEW }}
+                        <div style="color:red; font-size:11px;">{{ form.HARGA_NEW.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px; color:#555; font-weight:600;">
+                            Nilai Sisa Komponen
+                        </label>
+                        {{ form.NILAI_SISA_COMP }}
+                        <div style="color:red; font-size:11px;">
+                            {{ form.NILAI_SISA_COMP.errors }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Obsolete full width -->
+                <div style="margin-top: 16px;">
+                    <label style="font-size:12px; color:#555; font-weight:600;">Obsolete</label>
+                    {{ form.OBSOLETE }}
+                    <div style="color:red; font-size:11px;">{{ form.OBSOLETE.errors }}</div>
+                </div>
+
+            </fieldset>
+
+            <!-- Error umum -->
+            {% if form.non_field_errors %}
+            <div style="background:#fff0f0; border:1px solid #dc3545; border-radius:8px;
+                        padding:12px; margin-bottom:16px; color:#dc3545;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- Tombol aksi -->
+            <div style="display:flex; gap:12px; margin-top:8px;">
+                <button type="submit" id="btn-submit" disabled style="
+                    padding: 10px 28px;
+                    background: #ccc;
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 15px;
+                    cursor: not-allowed;
+                    transition: background 0.2s;
+                ">
+                    💾 Simpan Draft
+                </button>
+                <a href="{% url 'form:daftar_lampiran_capex' %}" style="
+                    padding: 10px 20px;
+                    background: #f0f0f0;
+                    color: #555;
+                    border-radius: 8px;
+                    font-size: 15px;
+                    text-decoration: none;
+                ">
+                    ✕ Batal
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+// ── URL endpoint AJAX ──────────────────────────────────────────────────────
+const LOOKUP_URL = "{% url 'form:ajax_asset_lookup' %}";
+
+// Mapping field asset → id input di form
+const FIELD_MAP = {
+    'CN_SAP':         'field-CN_SAP',
+    'GROUP':          'display-GROUP',
+    'TYPE':           'display-TYPE',
+    'EGI':            'display-EGI',
+    'HM_SMR':         'display-HM_SMR',
+    'SPO_EQUIPMENT':  'display-SPO_EQUIPMENT',
+    'PERSENTASE_SPO': 'display-PERSENTASE_SPO',
+};
+
+// Preview labels
+const PREVIEW_LABELS = {
+    'CN_SAP':         'CN SAP',
+    'No_Asset':       'No Asset',
+    'GROUP':          'Class Equipment',
+    'TYPE':           'Type',
+    'EGI':            'EGI',
+    'HM_SMR':         'Hour Meter',
+    'SPO_EQUIPMENT':  'SPO Equipment',
+    'PERSENTASE_SPO': '% SPO',
+    'LOCATION':       'Location',
+    'SUB_LOCATION':   'Sub Location',
+};
+
+// Jalankan otomatis jika ada initial CN SAP dari URL
+document.addEventListener('DOMContentLoaded', function () {
+    const initial = "{{ initial_cn_sap|escapejs }}";
+    if (initial) {
+        lookupAsset();
+    }
+});
+
+// Trigger lookup juga saat tekan Enter di input
+document.getElementById('cn_sap_input')
+    .addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            lookupAsset();
+        }
+    });
+
+// ── Fungsi utama lookup ────────────────────────────────────────────────────
+function lookupAsset() {
+    const cnSap   = document.getElementById('cn_sap_input').value.trim();
+    const status  = document.getElementById('lookup-status');
+    const preview = document.getElementById('asset-preview');
+    const btnSubmit = document.getElementById('btn-submit');
+
+    if (!cnSap) {
+        showStatus('⚠️ Masukkan CN SAP terlebih dahulu.', 'orange');
+        return;
+    }
+
+    showStatus('⏳ Mencari data...', '#888');
+
+    fetch(`${LOOKUP_URL}?cn_sap=${encodeURIComponent(cnSap)}`)
+        .then(r => r.json())
+        .then(result => {
+            if (result.found) {
+                // Isi semua field hidden/display
+                fillFields(result.data);
+                showPreview(result.data);
+                showStatus(
+                    `✅ Unit <strong>${cnSap}</strong> ditemukan. Lengkapi data manual di bawah.`,
+                    '#28a745'
+                );
+                // Aktifkan tombol submit
+                btnSubmit.disabled = false;
+                btnSubmit.style.background = '#28a745';
+                btnSubmit.style.cursor = 'pointer';
+            } else {
+                clearFields();
+                preview.style.display = 'none';
+                showStatus(`❌ ${result.error}`, '#dc3545');
+                btnSubmit.disabled = true;
+                btnSubmit.style.background = '#ccc';
+                btnSubmit.style.cursor = 'not-allowed';
+            }
+        })
+        .catch(err => {
+            showStatus('❌ Gagal terhubung ke server.', '#dc3545');
+            console.error(err);
+        });
+}
+
+function fillFields(data) {
+    // Isi field hidden CN_SAP (yang dikirim ke server)
+    document.getElementById('field-CN_SAP').value = data.CN_SAP || '';
+
+    // Isi display field auto-fill (readonly)
+    const displayMap = {
+        'display-GROUP':          data.GROUP,
+        'display-TYPE':           data.TYPE,
+        'display-EGI':            data.EGI,
+        'display-HM_SMR':         data.HM_SMR,
+        'display-SPO_EQUIPMENT':  data.SPO_EQUIPMENT,
+        'display-PERSENTASE_SPO': data.PERSENTASE_SPO,
+    };
+    Object.entries(displayMap).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+    });
+}
+
+function clearFields() {
+    document.getElementById('field-CN_SAP').value = '';
+    [
+        'display-GROUP', 'display-TYPE', 'display-EGI',
+        'display-HM_SMR', 'display-SPO_EQUIPMENT', 'display-PERSENTASE_SPO'
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+function showPreview(data) {
+    const grid    = document.getElementById('preview-grid');
+    const preview = document.getElementById('asset-preview');
+
+    grid.innerHTML = Object.entries(PREVIEW_LABELS)
+        .filter(([key]) => data[key])
+        .map(([key, label]) => `
+            <div style="
+                background:#fff;
+                border:1px solid #ddd;
+                border-radius:6px;
+                padding:8px 12px;
+            ">
+                <div style="font-size:10px; color:#888; font-weight:600;">
+                    ${label}
+                </div>
+                <div style="font-size:13px; color:#333; font-weight:500;
+                            margin-top:2px; word-break:break-all;">
+                    ${data[key] || '-'}
+                </div>
+            </div>
+        `).join('');
+
+    preview.style.display = 'block';
+}
+
+function showStatus(msg, color) {
+    const el = document.getElementById('lookup-status');
+    el.innerHTML = `<span style="color:${color};">${msg}</span>`;
+}
+</script>
+
+{% endblock %}
